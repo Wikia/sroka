@@ -115,6 +115,11 @@ Please add to `~/.bash_profile` lines like this:
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 ```
+### installing sroka
+
+1. If `PyYAML` package is not building correctly, it may be caused by the fact that newer versions of pip won’t uninstall the package because it’s handled by disutils. Please install `PyYAML` package first with `--ignore-installed` flag. 
+
+2. If numpy gets messed up during sroka installation it is probably caused by multiple versions installed. Please uninstall all using pip uninstall and then reinstall latest one.
 
 ## Credits
 
