@@ -115,3 +115,18 @@ Please add to `~/.bash_profile` lines like this:
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 ```
+
+## Credits
+
+All people that contributed to sroka development, also before going opensource (including CR and QA):
+* [martynaut](https://github.com/martynaut)
+* [dorotamierzwa](https://github.com/dorotamierzwa)
+* [fraszczakszymon](https://github.com/fraszczakszymon)
+* [bckatarzyna](https://github.com/bckatarzyna)
+* [jacekbj](https://github.com/jacekbj)
+* [nandy-andy](https://github.com/nandy-andy)
+* [dmnsobczak](https://github.com/dmnsobczak)
+* [szczeles](https://github.com/szczeles)
+* [kvas-damian](https://github.com/kvas-damian)
+* [pnather](https://github.com/pnather)
+* [philthyharry](https://github.com/philthyharry)
