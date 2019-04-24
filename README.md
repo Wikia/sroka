@@ -25,6 +25,12 @@ flake8 .
 
 ## Installation
 
+### Pypi last release
+
+```pip install sroka```
+
+### GitHub version
+
 ```pip install git+ssh://git@github.com/Wikia/sroka```
 
 
