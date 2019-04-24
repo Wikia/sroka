@@ -30,6 +30,14 @@ def get_first_profile_id(service):
 
 
 def get_top_keywords(service, input_dict):
+    if input_dict['filters'] == '' and input_dict['segment'] == '':
+        return service.data().ga().get(
+            ids=input_dict['ids'],
+            start_date=input_dict['start_date'],
+            end_date=input_dict['end_date'],
+            metrics=input_dict['metrics'],
+            dimensions=input_dict['dimensions'],
+            samplingLevel=input_dict['sampling_level']).execute()
     if input_dict['filters'] == '':
         return service.data().ga().get(
           ids=input_dict['ids'],
@@ -84,6 +92,7 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
         first_profile_id = get_first_profile_id(service)
         if not first_profile_id:
             print('Could not find a valid profile for this user.')
+            return pd.DataFrame([])
         else:
             input_dict['sampling_level'] = sampling_level
             results = get_top_keywords(service, input_dict)
@@ -108,15 +117,18 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
     except TypeError as error:
         # Handle errors in constructing a query.
         print(('There was an error in constructing your query : {}'.format(error)))
+        return pd.DataFrame([])
 
     except HttpError as error:
         # Handle API errors.
         print(('Arg, there was an API error : {} : {}'.format(error.resp.status, error._get_reason())))
+        return pd.DataFrame([])
 
     except RefreshError as error:
         # Handle Auth errors.
         print('The credentials have been revoked or expired, please re-run '
               'the application to re-authorize' + str(error))
+        return pd.DataFrame([])
 
     except KeyError as error:
         # Handle wrong or missing values in query.
@@ -124,6 +136,7 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
             print('Your query did not return any rows.')
         else:
             print('There is an error or missing value in your query: {}'.format(error))
+        return pd.DataFrame([])
 
     except AssertionError as error:
         # Handle errors in constructing a query.
@@ -131,3 +144,4 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
             print('Your query is missing dimensions.')
         else:
             print(('There was an error in constructing your query : {}'.format(error)))
+        return pd.DataFrame([])
