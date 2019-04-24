@@ -30,6 +30,14 @@ def get_first_profile_id(service):
 
 
 def get_top_keywords(service, input_dict):
+    if input_dict['filters'] == '' and input_dict['segment'] == '':
+        return service.data().ga().get(
+            ids=input_dict['ids'],
+            start_date=input_dict['start_date'],
+            end_date=input_dict['end_date'],
+            metrics=input_dict['metrics'],
+            dimensions=input_dict['dimensions'],
+            samplingLevel=input_dict['sampling_level']).execute()
     if input_dict['filters'] == '':
         return service.data().ga().get(
           ids=input_dict['ids'],
