@@ -29,7 +29,7 @@ flake8 .
 
 ```pip install sroka```
 
-### GitHub version (beta version)
+### GitHub version
 
 ```pip install git+ssh://git@github.com/Wikia/sroka```
 
