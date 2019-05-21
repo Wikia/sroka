@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sroka",
-    version="0.0.2",
+    version="0.0.1",
     author="Ad Engineering FANDOM",
     author_email="murbanek@fandom.com",
     description="Package for access GA, GAM, MOAT, Qubole, Athena, S3, Rubicon APIs",
@@ -22,11 +22,10 @@ setuptools.setup(
         'googleads>=14.1.0',
         'google_api_python_client>=1.6.7',
         'google-auth-httplib2>=0.0.3',
-        'pandas>=0.22',
+        'pandas>=0.23.4',
         'qds_sdk>=1.10.1',
         'boto3>=1.9.19',
         'retrying>=1.3.3',
-        'isort==4.3.9',
         'pyarrow>=0.11.1',
         'botocore>=1.12.19',
         'numpy>=1.16.2',
