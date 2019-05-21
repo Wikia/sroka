@@ -30,6 +30,7 @@ setuptools.setup(
         'pyarrow>=0.11.1',
         'botocore>=1.12.19',
         'numpy>=1.16.2',
-        'urllib3<1.23,>=1.21.1'
+        'urllib3>=1.24.2,<1.25',
+        'requests>=2.20'
     ]
 )
