@@ -11,4 +11,5 @@ flake8==3.7.7
 isort==4.3.9
 botocore>=1.12.19
 numpy>=1.16.2
-urllib3>=1.23
+urllib3>=1.24.2,<1.25
+requests>=2.20
