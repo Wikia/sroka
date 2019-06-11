@@ -25,11 +25,12 @@ from sroka.api.ga.ga import ga_request
 
 request = {
 "ids" : "ga:12345678",
-"start_date" : "2018-05-01",
-"end_date" : "2018-05-07",
-"metrics" : "ga:pageviews,ga:sessions,ga:bounceRate,ga:avgTimeOnPage,ga:avgPageLoadTime",
-"filters" : "ga:deviceCategory=~desktop,ga:deviceCategory=~tablet",
-"segment" : "",
+"start_date": "2018-05-01",
+"end_date": "2018-05-07",
+"metrics": "ga:pageviews,ga:sessions,ga:bounceRate,ga:avgTimeOnPage,ga:avgPageLoadTime",
+"filters": "ga:deviceCategory=~desktop,ga:deviceCategory=~tablet",
+"segment": "",
+"sort": "-ga:pageviews",
 "dimensions" : "ga:day"
 }
 
