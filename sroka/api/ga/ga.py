@@ -69,7 +69,6 @@ def print_results(results):
 
 
 def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
-    print('new version')
     # Authenticate and construct service.
     scope = 'https://www.googleapis.com/auth/analytics.readonly'
     key_file_location = config.get_file_path('google_analytics')
