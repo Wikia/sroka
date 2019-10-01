@@ -4,6 +4,7 @@ from io import BytesIO, StringIO
 
 import boto3
 import pandas as pd
+import numpy as np
 import pyarrow.parquet as pq
 from botocore.exceptions import ClientError
 
@@ -74,3 +75,33 @@ def s3_download_data(s3_filename, prefix=False, output_file=None, sep=','):
         data.to_csv(output_file, sep=sep)
 
     return data
+
+
+def s3_upload_data(data, bucket, path, sep=','):
+    key_id = config.get_value('aws', 'aws_access_key_id')
+    access_key = config.get_value('aws', 'aws_secret_access_key')
+    session = boto3.Session(
+        aws_access_key_id=key_id,
+        aws_secret_access_key=access_key
+    )
+
+    try:
+        if type(data) == pd.core.frame.DataFrame:
+            csv_buffer = StringIO()
+            data.to_csv(csv_buffer, sep=sep)
+            data = csv_buffer.getvalue()
+        elif type(data) == np.ndarray:
+            txt_buffer = StringIO()
+            np.savetxt(txt_buffer, data, delimiter=sep)
+            data = txt_buffer.getvalue()
+
+    except AttributeError:
+        print('Uploaded file must be pandas DataFrame or numpy array')
+    s3 = session.resource('s3')
+
+    try:
+        s3.Bucket(bucket).put_object(Key=path, Body=data)
+        print('Success. File saved at s3://{}/{}'.format(bucket, path))
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'NoSuchBucket':
+            print('The specified bucket does not exist')
