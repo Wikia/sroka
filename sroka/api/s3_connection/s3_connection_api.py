@@ -85,19 +85,18 @@ def s3_upload_data(data, bucket, path, sep=','):
         aws_secret_access_key=access_key
     )
 
+    csv_buffer = StringIO()
+
     try:
         if type(data) == pd.core.frame.DataFrame:
-            csv_buffer = StringIO()
             data.to_csv(csv_buffer, sep=sep)
-            data = csv_buffer.getvalue()
         elif type(data) == np.ndarray:
-            txt_buffer = StringIO()
-            np.savetxt(txt_buffer, data, delimiter=sep)
-            data = txt_buffer.getvalue()
-
+            np.savetxt(csv_buffer, data, delimiter=sep)
     except AttributeError:
         print('Uploaded file must be pandas DataFrame or numpy array')
     s3 = session.resource('s3')
+
+    data = csv_buffer.getvalue()
 
     try:
         s3.Bucket(bucket).put_object(Key=path, Body=data)

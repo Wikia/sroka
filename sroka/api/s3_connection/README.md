@@ -42,13 +42,13 @@ s3_download_data('s3://bucket/folder/2019_01_01/part-111-111-111-111-111-111.csv
 #### Arguments
 
 * pandas DataFrame or numpy array `data` - object to be saved on s3  (obligatory)
-* sting `bucket` - name of an existing bucket on s3 that is file destination (obligatory)
+* string `bucket` - name of an existing bucket on s3 that is file destination (obligatory)
 * string `path` - full file path within the bucket (obligatory)
-* string `sep` - what separator is used in (default: `,`)
+* string `sep` - delimiter to use (default: `,`)
 
 #### Returns
 
-* confirmation the file is saved
+* nothing, prints confirmation the file is saved
 
 ## Usage
 ```python
