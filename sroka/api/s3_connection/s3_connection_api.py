@@ -87,20 +87,22 @@ def s3_upload_data(data, bucket, path, sep=','):
 
     csv_buffer = StringIO()
 
-    try:
+    if type(data) == pd.core.frame.DataFrame or type(data) == np.ndarray:
+
         if type(data) == pd.core.frame.DataFrame:
             data.to_csv(csv_buffer, sep=sep)
         elif type(data) == np.ndarray:
             np.savetxt(csv_buffer, data, delimiter=sep)
-    except AttributeError:
-        print('Uploaded file must be pandas DataFrame or numpy array')
-    s3 = session.resource('s3')
 
-    data = csv_buffer.getvalue()
+        s3 = session.resource('s3')
+        data = csv_buffer.getvalue()
 
-    try:
-        s3.Bucket(bucket).put_object(Key=path, Body=data)
-        print('Success. File saved at s3://{}/{}'.format(bucket, path))
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'NoSuchBucket':
-            print('The specified bucket does not exist')
+        try:
+            s3.Bucket(bucket).put_object(Key=path, Body=data)
+            print('Success. File saved at s3://{}/{}'.format(bucket, path))
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'NoSuchBucket':
+                print('The specified bucket does not exist')
+
+    else:
+        print('Uploaded file must be pandas DataFrame or numpy array and not {}'.format(type(data)))
