@@ -6,7 +6,7 @@ import boto3
 import pandas as pd
 import numpy as np
 import pyarrow.parquet as pq
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, ParamValidationError
 
 import sroka.config.config as config
 
@@ -85,24 +85,33 @@ def s3_upload_data(data, bucket, path, sep=','):
         aws_secret_access_key=access_key
     )
 
-    csv_buffer = StringIO()
+    if type(sep) == str:
 
-    if type(data) == pd.core.frame.DataFrame or type(data) == np.ndarray:
+        csv_buffer = StringIO()
 
-        if type(data) == pd.core.frame.DataFrame:
-            data.to_csv(csv_buffer, sep=sep)
-        elif type(data) == np.ndarray:
-            np.savetxt(csv_buffer, data, delimiter=sep)
+        if type(data) == pd.core.frame.DataFrame or type(data) == np.ndarray:
 
-        s3 = session.resource('s3')
-        data = csv_buffer.getvalue()
+            if type(data) == pd.core.frame.DataFrame:
+                data.to_csv(csv_buffer, sep=sep)
+            elif type(data) == np.ndarray:
+                np.savetxt(csv_buffer, data, delimiter=sep, fmt='%s')
 
-        try:
-            s3.Bucket(bucket).put_object(Key=path, Body=data)
-            print('Success. File saved at s3://{}/{}'.format(bucket, path))
-        except ClientError as e:
-            if e.response['Error']['Code'] == 'NoSuchBucket':
-                print('The specified bucket does not exist')
+            s3 = session.resource('s3')
+            data = csv_buffer.getvalue()
+
+            try:
+                s3.Bucket(bucket).put_object(Key=path, Body=data)
+                print('Success. File saved at s3://{}/{}'.format(bucket, path))
+            except TypeError:
+                print('Bucket name must be a string')
+            except ClientError as e:
+                if e.response['Error']['Code'] == 'NoSuchBucket':
+                    print('The specified bucket does not exist')
+            except ParamValidationError as e:
+                print(e)
+
+        else:
+            print('Uploaded file must be pandas DataFrame or numpy array and not {}'.format(type(data)))
 
     else:
-        print('Uploaded file must be pandas DataFrame or numpy array and not {}'.format(type(data)))
+        print('Separator must be a string')
