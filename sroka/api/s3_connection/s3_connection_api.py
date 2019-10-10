@@ -85,7 +85,7 @@ def s3_upload_data(data, bucket, path, sep=','):
         aws_secret_access_key=access_key
     )
 
-    if type(sep) == str:
+    if type(sep) == str and len(sep) == 1:
 
         csv_buffer = StringIO()
 
@@ -114,4 +114,4 @@ def s3_upload_data(data, bucket, path, sep=','):
             print('Uploaded file must be pandas DataFrame or numpy array and not {}'.format(type(data)))
 
     else:
-        print('Separator must be a string')
+        print('Separator must be a 1-character string')
