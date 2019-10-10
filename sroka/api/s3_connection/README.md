@@ -34,3 +34,30 @@ s3_download_data('s3://bucket/folder/2019_01_01/', output_file='./clicked.csv', 
 s3_download_data('s3://bucket/folder/2019_01_01/part-111-111-111-111-111-111.csv', 
    output_file='./clicked_1.csv')
 ```
+
+
+### `s3_upload_data(data, bucket, path, sep=',')`
+
+
+#### Arguments
+
+* pandas DataFrame or numpy array `data` - object to be saved on s3  (obligatory)
+* string `bucket` - name of an existing bucket on s3 that is file destination (obligatory)
+* string `path` - full file path within the bucket (obligatory)
+* string `sep` - 1-character delimiter to use (default: `,`)
+
+#### Returns
+
+* nothing, prints confirmation the file is saved
+
+## Usage
+```python
+
+# saving a DataFrame to a "s3://bucket/folder/2019_01_01/df.csv" path
+
+s3_upload_data(df, bucket='bucket', path='folder/2019_01_01/df.csv', sep=';')
+   
+```
+
+
+
