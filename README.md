@@ -9,6 +9,7 @@ Package providing simple Python access to data in:
 * Athena
 * Google sheets
 * s3
+* MySQL
 
 ## Developers
 
@@ -108,6 +109,13 @@ The name of location without `s3://` and `/` is what you need.
 ### Rubicon credentials
 1. You should have your id, username and password from Rubicon
 2. Copy values to ```config.ini``` file in relevant fields
+
+
+### MySQL connection information
+
+1. In order to connect to a remote MySQL server, you need to provide the `host` and `port` values in the configuration. If it is accessible through a unix socket, you need to provide the path to this socket instead in the `unix_socket` configuration field.
+2. If the MySQL server is protected by user credentials, you need to provide the `user` and `password` values in the configuration.
+3. You can optionally specify the database to which you want to connect in the `database` configuration field.
 
 ## Common issues
 
