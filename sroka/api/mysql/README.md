@@ -5,7 +5,7 @@
 Here are the configuration variables that the `mysql` connector supports:
 
 * `host`: The host address on which the MySQL server you want to access runs. Can be an IP or a domain (e.g.: `127.0.0.1`, `localhost`, `test.com/mysql`, etc.). Mutually exclusive with the `unix_socket` option.
-* `port`: The port on which the MySQL server is exposed. Must be used with the `host` option. Not necessary when the `unix_socket`
+* `port`: The port on which the MySQL server is exposed. Must be used with the `host` option. Not necessary when the `unix_socket` is defined.
 * `unix_socket`: The path to the unix socket on which the MySQL server connection is exposed. (e.g.: `/var/run/mysql/mysql.sock`) Mutually exclusive with the `host` option.
 * `user`: The username to connect on the database with.
 * `password`: The password for the user to connect with. Optional.
@@ -41,6 +41,6 @@ dataframe = query_mysql("""
     SELECT * FROM table
     WHERE year='2018' and month='10' and day='07'
     LIMIT 10
-""", 'results.csv')
+""")
 ```
 
