@@ -4,8 +4,9 @@ from io import BytesIO, StringIO
 
 import boto3
 import pandas as pd
+import numpy as np
 import pyarrow.parquet as pq
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, ParamValidationError
 
 import sroka.config.config as config
 
@@ -74,3 +75,43 @@ def s3_download_data(s3_filename, prefix=False, output_file=None, sep=','):
         data.to_csv(output_file, sep=sep)
 
     return data
+
+
+def s3_upload_data(data, bucket, path, sep=','):
+    key_id = config.get_value('aws', 'aws_access_key_id')
+    access_key = config.get_value('aws', 'aws_secret_access_key')
+    session = boto3.Session(
+        aws_access_key_id=key_id,
+        aws_secret_access_key=access_key
+    )
+
+    if type(sep) == str and len(sep) == 1:
+
+        csv_buffer = StringIO()
+
+        if type(data) == pd.core.frame.DataFrame or type(data) == np.ndarray:
+
+            if type(data) == pd.core.frame.DataFrame:
+                data.to_csv(csv_buffer, sep=sep)
+            elif type(data) == np.ndarray:
+                np.savetxt(csv_buffer, data, delimiter=sep, fmt='%s')
+
+            s3 = session.resource('s3')
+            data = csv_buffer.getvalue()
+
+            try:
+                s3.Bucket(bucket).put_object(Key=path, Body=data)
+                print('Success. File saved at s3://{}/{}'.format(bucket, path))
+            except TypeError:
+                print('Bucket name must be a string')
+            except ClientError as e:
+                if e.response['Error']['Code'] == 'NoSuchBucket':
+                    print('The specified bucket does not exist')
+            except ParamValidationError as e:
+                print(e)
+
+        else:
+            print('Uploaded file must be pandas DataFrame or numpy array and not {}'.format(type(data)))
+
+    else:
+        print('Separator must be a 1-character string')
