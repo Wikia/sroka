@@ -1,5 +1,6 @@
 from configparser import NoOptionError, NoSectionError
 
+import os
 import mysql.connector
 from mysql.connector.errors import DatabaseError, OperationalError, InternalError
 import pandas as pd
@@ -51,6 +52,15 @@ def query_mysql(query: str, filename=None):
     cursor.close()
     connection.close()
 
+    # Get path to folder in which to create the file.
+    filepath = "\\".join(filename.split('\\')[:-1])
+
+    # If it does not exist, create it.
+    if not os.path.exists(filepath):
+        os.makedirs(filepath, exist_ok=True)
+
+    # Save data to CSV file if a filename was provided, return it in a pandas
+    # dataframe otherwise.
     if filename:
         df.to_csv(filename)
     else:
