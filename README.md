@@ -90,7 +90,7 @@ end up with `credentials.json` file that should be downloaded to `~/.sroka_confi
 
 
 
-## Getting access tokens to Qubole and Athena
+## Getting credentials & access tokens
 
 ### Qubole
 
