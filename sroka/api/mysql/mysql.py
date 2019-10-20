@@ -105,8 +105,11 @@ def validate_options(options: dict):
     # connect to the database.
     if "unix_socket" not in options and "host" not in options:
         print('Invalid Configuration: In order to connect to the MySQL database, the host/port options or the unix_socket option must be set.')
+        return False
     # If both keys are present and both have values, the configuration is
     # ambiguous.
     if "unix_socket" in options and "host" in options and \
         options["unix_socket"] != "" and options["host"] != "":
         print('Invalid Configuration: In order to connect to the MySQL database, the host/port options or the unix_socket option must be set.')
+        return False
+    return True
