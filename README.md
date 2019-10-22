@@ -1,3 +1,5 @@
+<p align="center"><img width="500" src="images/sroka.png"/></p>
+
 # sroka package
 
 Package providing simple Python access to data in:
