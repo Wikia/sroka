@@ -15,7 +15,7 @@ def input_check(input_to_check, expected_types):
 
 
 def return_on_exception(filename):
-    return None if filename else pd.DataFrame([])
+    return None if filename or filename == '' else pd.DataFrame([])
 
 
 @retry(stop_max_attempt_number=10,
