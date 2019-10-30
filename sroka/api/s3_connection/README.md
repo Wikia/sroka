@@ -3,7 +3,7 @@
 ## Methods
 
 
-### `s3_download_data(s3_filename, prefix=False, output_file='', sep=',')`
+### `s3_download_data(s3_filename, prefix=False, output_file='', sep=',', skip_empty_files=True)`
 
 
 #### Arguments
@@ -14,7 +14,8 @@
 * string `output_file` - if `None` function will return pandas DataFrame, if filename - DataFrame will be
 saved to defined file (default: `None`)
 * string `sep` - what separator is used in (default: `,`)
-
+* Bool `skip_empty_files` - has effect only if `prefix=True`. If `skip_empty_files=False`, will not return any results if
+prefix contains empty files. Otherwise result will be based on all other non-empty files (default `True`)
 #### Returns
 
 * pandas DataFrame
