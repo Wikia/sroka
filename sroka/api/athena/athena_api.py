@@ -5,10 +5,22 @@ import boto3
 from botocore.exceptions import ClientError, EndpointConnectionError
 
 import sroka.config.config as config
-from sroka.api.athena.athena_api_helpers import poll_status, download_file, return_on_exception
+from sroka.api.athena.athena_api_helpers import poll_status, download_file, return_on_exception, \
+    input_check
 
 
 def query_athena(query, filename=None):
+
+    if not input_check(query, [str]):
+        return return_on_exception(filename)
+
+    if not input_check(filename, [str, type(None)]):
+        return return_on_exception(filename)
+
+    if filename == '':
+        print('Filename cannot be empty')
+        return return_on_exception(filename)
+
     try:
         s3_bucket = config.get_value('aws', 's3bucket_name')
         key_id = config.get_value('aws', 'aws_access_key_id')
@@ -68,6 +80,13 @@ def query_athena(query, filename=None):
 
 
 def done_athena(query_id, filename=None):
+
+    if not input_check(query_id, [str]):
+        return return_on_exception(filename)
+
+    if not input_check(filename, [str, type(None)]):
+        return return_on_exception(filename)
+
     try:
         s3_bucket = config.get_value('aws', 's3bucket_name')
         key_id = config.get_value('aws', 'aws_access_key_id')

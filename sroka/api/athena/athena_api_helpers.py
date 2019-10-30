@@ -3,11 +3,19 @@ from botocore.exceptions import ClientError, EndpointConnectionError
 from retrying import retry
 
 
+def input_check(input_to_check, expected_types):
+    for expected_type in expected_types:
+        if type(input_to_check) == expected_type:
+            if expected_type == str and len(input_to_check) == 0:
+                print('Function input must be a nonempty string.')
+                return False
+            return True
+    print('Function input must be a string.')
+    return False
+
+
 def return_on_exception(filename):
-    if filename:
-        return None
-    else:
-        return pd.DataFrame([])
+    return None if filename else pd.DataFrame([])
 
 
 @retry(stop_max_attempt_number=10,
@@ -68,5 +76,10 @@ def download_file(s3, s3_bucket, s3_key, filename):
                 print('Please check your credentials including s3_bucket in config.ini file. Error message:')
             print(e)
             return None
-        df = pd.read_csv(obj['Body'])
+        try:
+            df = pd.read_csv(obj['Body'])
+        except ValueError as e:
+            print('Something went wrong with query output formatting. Error message:')
+            print(e)
+            return None
         return df
