@@ -30,7 +30,7 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
         except UnicodeDecodeError:
             df_list.append(pq.read_pandas(data).to_pandas())
         except EmptyDataError:
-            print('Requested file is empty: ', file.key)
+            print('File is empty')
             return pd.DataFrame([])
 
     else:
