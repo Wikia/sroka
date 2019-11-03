@@ -14,7 +14,12 @@ import sroka.config.config as config
 warnings.filterwarnings('ignore')
 
 
-def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=True):
+def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=True,
+                   with_header=True):
+    if with_header:
+        header_setting = 'infer'
+    else:
+        header_setting = None
     df_list = []
     if prefix is False:
         file = s3.Object(bucket_name, key_prefix)
@@ -26,7 +31,8 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
             print('File not found on s3')
             return pd.DataFrame([])
         try:
-            df_list.append(pd.read_csv(data, error_bad_lines=False, warn_bad_lines=False, sep=sep))
+            df_list.append(pd.read_csv(data, error_bad_lines=False, warn_bad_lines=False, sep=sep,
+                                       header=header_setting))
         except UnicodeDecodeError:
             df_list.append(pq.read_pandas(data).to_pandas())
         except EmptyDataError:
@@ -41,7 +47,8 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
                 if 'SUCCESS' not in file.key:
                     tmp = StringIO(str(file.get()['Body'].read(), 'utf-8'))
                     try:
-                        data = pd.read_csv(tmp, error_bad_lines=False, warn_bad_lines=False, sep=sep)
+                        data = pd.read_csv(tmp, error_bad_lines=False, warn_bad_lines=False, sep=sep,
+                                           header=header_setting)
                         df_list.append(data)
                     except EmptyDataError:
                         if skip_empty_files is False:
@@ -64,7 +71,8 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
     return data
 
 
-def s3_download_data(s3_filename, prefix=False, output_file=None, sep=',', skip_empty_files=True):
+def s3_download_data(s3_filename, prefix=False, output_file=None, sep=',', skip_empty_files=True,
+                     with_header=True):
     key_id = config.get_value('aws', 'aws_access_key_id')
     access_key = config.get_value('aws', 'aws_secret_access_key')
     session = boto3.Session(
@@ -83,7 +91,8 @@ def s3_download_data(s3_filename, prefix=False, output_file=None, sep=',', skip_
 
     if type(sep) == str and len(sep) == 1:
 
-        data = _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files)
+        data = _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files,
+                              with_header)
 
         if output_file:
             data.to_csv(output_file, sep=sep)
