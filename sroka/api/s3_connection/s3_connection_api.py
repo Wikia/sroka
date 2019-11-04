@@ -15,8 +15,8 @@ warnings.filterwarnings('ignore')
 
 
 def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=True,
-                   with_header=True):
-    if with_header:
+                   first_row_columns=True):
+    if first_row_columns:
         header_setting = 'infer'
     else:
         header_setting = None
@@ -72,7 +72,7 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
 
 
 def s3_download_data(s3_filename, prefix=False, output_file=None, sep=',', skip_empty_files=True,
-                     with_header=True):
+                     first_row_columns=True):
     key_id = config.get_value('aws', 'aws_access_key_id')
     access_key = config.get_value('aws', 'aws_secret_access_key')
     session = boto3.Session(
@@ -92,7 +92,7 @@ def s3_download_data(s3_filename, prefix=False, output_file=None, sep=',', skip_
     if type(sep) == str and len(sep) == 1:
 
         data = _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files,
-                              with_header)
+                              first_row_columns)
 
         if output_file:
             data.to_csv(output_file, sep=sep)
