@@ -11,6 +11,8 @@ Package providing simple Python access to data in:
 * s3
 * MySQL
 
+Sroka library was checked to work for Python **>=3.6 <3.8**.
+
 ## Developers
 
 Install requirements and enable custom githooks:

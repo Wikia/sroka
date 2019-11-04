@@ -11,7 +11,7 @@ def validate_input_dict(moat_dict):
     """
     for column in ['start', 'end', 'columns']:
         if column not in moat_dict.keys():
-            print(f'{column} is not defined')
+            print('{} is not defined'.format(column))
             return False
 
     if type(moat_dict['columns']) != list or moat_dict['columns'] == []:
