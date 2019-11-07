@@ -30,12 +30,8 @@ def google_drive_sheets_read(sheetname_id, sheet_range, first_row_columns=False)
         result = sheet.values().get(spreadsheetId=sheetname_id,
                                     range=sheet_range).execute()
     except HttpError as err:
-        if err.resp.status == 400:
-            print("HTTP error occurred. Please verify if sheet_range is correctly set. Error:")
-            print(err)
-        else:
-            print("HTTP error occurred. Please check spreadsheet id and your connection. Error:")
-            print(err)
+        print("HTTP error occurred. Error:")
+        print(err)
         return pd.DataFrame([])
 
     values = result.get('values', [])
@@ -70,7 +66,7 @@ def google_drive_sheets_create(name):
         spreadsheet = service.spreadsheets().create(body=spreadsheet,
                                                     fields='spreadsheetId').execute()
     except HttpError as err:
-        print("HTTP error occurred. Please check your connection. Error:")
+        print("HTTP error occurred. Error:")
         print(err)
         return ''
 
@@ -101,12 +97,8 @@ def google_drive_sheets_add_tab(spreadsheet_id, name):
                                                          body={'requests': data},
                                                          fields='replies/addSheet').execute()
     except HttpError as err:
-        if err.resp.status == 400:
-            print("HTTP error occurred. Please verify if tab with requested name doesn't already exist. Error:")
-            print(err)
-        else:
-            print("HTTP error occurred. Please check spreadsheet id and your connection. Error:")
-            print(err)
+        print("HTTP error occurred. Error:")
+        print(err)
         return spreadsheet_id
 
     return spreadsheet.get('spreadsheetId')
@@ -148,14 +140,12 @@ def google_drive_sheets_write(data, spreadsheet_id, sheet_range='Sheet1!A1',
             spreadsheetId=spreadsheet_id, range=sheet_range,
             body=body, valueInputOption='RAW').execute()
     except HttpError as err:
-        if err.resp.status == 400:
-            print("HTTP error occurred. Please verify if sheet_range is correctly set. Error:")
-            print(err)
-        else:
-            print("HTTP error occurred. Please check spreadsheet id and your connection. Error:")
-            print(err)
+        print("HTTP error occurred. Error:")
+        print(err)
+        return None
 
     print('Successfully uploaded to google sheets: https://docs.google.com/spreadsheets/d/' + spreadsheet_id)
+    return None
 
 
 def google_drive_sheets_upload(data, name,
