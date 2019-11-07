@@ -131,7 +131,8 @@ def google_drive_sheets_write(data, spreadsheet_id, sheet_range='Sheet1!A1',
     columns = list(data.columns)
 
     if with_index:
-        values = np.append(np.array([list(data.index)]).T, values, axis=1).tolist()
+        if values:
+            values = np.append(np.array([list(data.index)]).T, values, axis=1).tolist()
         columns = ['index'] + list(data.columns)
     if with_columns:
         if values:
