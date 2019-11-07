@@ -3,7 +3,7 @@
 ## Methods
 
 
-### `google_drive_sheets_read(sheetname_id, sheet_range)`
+### `google_drive_sheets_read(sheetname_id, sheet_range, first_row_columns=True)`
 Read from existing google sheet
 
 
