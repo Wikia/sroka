@@ -30,18 +30,17 @@ def google_drive_sheets_read(sheetname_id, sheet_range, first_row_columns=False)
         result = sheet.values().get(spreadsheetId=sheetname_id,
                                     range=sheet_range).execute()
     except HttpError as err:
-        if err.resp.status == 400:
-            print("HTTP error occurred. Please verify if sheet_range is correctly set.")
-        else:
-            print("HTTP error occurred. Please check spreadsheet id and your connection.")
+        print("HTTP error occurred. Error:")
+        print(err)
         return pd.DataFrame([])
 
     values = result.get('values', [])
     df = pd.DataFrame(values)
 
     if first_row_columns:
-        df.columns = df.loc[0, :]
+        df.columns = df.loc[0, :].values
         df.drop(0, inplace=True)
+        df.reset_index(drop=True, inplace=True)
     return df
 
 
@@ -63,8 +62,14 @@ def google_drive_sheets_create(name):
             'title': name
         }
     }
-    spreadsheet = service.spreadsheets().create(body=spreadsheet,
-                                                fields='spreadsheetId').execute()
+    try:
+        spreadsheet = service.spreadsheets().create(body=spreadsheet,
+                                                    fields='spreadsheetId').execute()
+    except HttpError as err:
+        print("HTTP error occurred. Error:")
+        print(err)
+        return ''
+
     return spreadsheet.get('spreadsheetId')
 
 
@@ -92,10 +97,8 @@ def google_drive_sheets_add_tab(spreadsheet_id, name):
                                                          body={'requests': data},
                                                          fields='replies/addSheet').execute()
     except HttpError as err:
-        if err.resp.status == 400:
-            print("HTTP error occurred. Please verify if tab with requested name doesn't already exist.")
-        else:
-            print("HTTP error occurred. Please check spreadsheet id and your connection.")
+        print("HTTP error occurred. Error:")
+        print(err)
         return spreadsheet_id
 
     return spreadsheet.get('spreadsheetId')
@@ -120,10 +123,14 @@ def google_drive_sheets_write(data, spreadsheet_id, sheet_range='Sheet1!A1',
     columns = list(data.columns)
 
     if with_index:
-        values = np.append(np.array([list(data.index)]).T, values, axis=1).tolist()
+        if values:
+            values = np.append(np.array([list(data.index)]).T, values, axis=1).tolist()
         columns = ['index'] + list(data.columns)
     if with_columns:
-        values = np.append([columns], values, axis=0).tolist()
+        if values:
+            values = np.append([columns], values, axis=0).tolist()
+        else:
+            values = [columns]
 
     body = {
         'values': values
@@ -133,13 +140,12 @@ def google_drive_sheets_write(data, spreadsheet_id, sheet_range='Sheet1!A1',
             spreadsheetId=spreadsheet_id, range=sheet_range,
             body=body, valueInputOption='RAW').execute()
     except HttpError as err:
-        if err.resp.status == 400:
-            print("HTTP error occurred. Please verify if sheet_range is correctly set.")
-        else:
-            print("HTTP error occurred. Please check spreadsheet id and your connection.")
-        return pd.DataFrame([])
+        print("HTTP error occurred. Error:")
+        print(err)
+        return None
 
     print('Successfully uploaded to google sheets: https://docs.google.com/spreadsheets/d/' + spreadsheet_id)
+    return None
 
 
 def google_drive_sheets_upload(data, name,
