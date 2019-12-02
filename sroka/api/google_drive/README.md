@@ -3,7 +3,7 @@
 ## Methods
 
 
-### `google_drive_sheets_read(sheetname_id, sheet_range)`
+### `google_drive_sheets_read(sheetname_id, sheet_range, first_row_columns=True)`
 Read from existing google sheet
 
 
@@ -11,6 +11,7 @@ Read from existing google sheet
 
 * string `sheetname_id` - id of google sheet
 * string `sheet_range` - range of data in format `sheet_name!range` (range within sheet is optional) e.g. `Sheet1!A1:E5` or `Sheet1`
+* boolean `first_row_columns` - whether to use first row as columns or not. Defaults to `False`.
 
 #### Returns
 

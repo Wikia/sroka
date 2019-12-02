@@ -30,41 +30,33 @@ def get_first_profile_id(service):
 
 
 def get_top_keywords(service, input_dict):
-    if input_dict['filters'] == '' and input_dict['segment'] == '':
-        return service.data().ga().get(
-            ids=input_dict['ids'],
-            start_date=input_dict['start_date'],
-            end_date=input_dict['end_date'],
-            metrics=input_dict['metrics'],
-            dimensions=input_dict['dimensions'],
-            samplingLevel=input_dict['sampling_level']).execute()
-    if input_dict['filters'] == '':
-        return service.data().ga().get(
-          ids=input_dict['ids'],
-          start_date=input_dict['start_date'],
-          end_date=input_dict['end_date'],
-          metrics=input_dict['metrics'],
-          segment=input_dict['segment'],
-          dimensions=input_dict['dimensions'],
-          samplingLevel=input_dict['sampling_level']).execute()
-    if input_dict['segment'] == '':
-        return service.data().ga().get(
-          ids=input_dict['ids'],
-          start_date=input_dict['start_date'],
-          end_date=input_dict['end_date'],
-          metrics=input_dict['metrics'],
-          filters=input_dict['filters'],
-          dimensions=input_dict['dimensions'],
-          samplingLevel=input_dict['sampling_level']).execute()
+    to_remove = []
+    for key in input_dict.keys():
+        if input_dict[key] == '':
+            to_remove.append(key)
+        if key not in ['ids',
+                       'start_date',
+                       'end_date',
+                       'metrics',
+                       'segment',
+                       'filters',
+                       'sort',
+                       'dimensions',
+                       'sampling_level']:
+            print("{} field is not used.".format(key))
+    for key in to_remove:
+            del input_dict[key]
     return service.data().ga().get(
-        ids=input_dict['ids'],
-        start_date=input_dict['start_date'],
-        end_date=input_dict['end_date'],
-        metrics=input_dict['metrics'],
-        segment=input_dict['segment'],
-        filters=input_dict['filters'],
-        dimensions=input_dict['dimensions'],
-        samplingLevel=input_dict['sampling_level']).execute()
+        ids=input_dict['ids'] if 'ids' in input_dict.keys() else None,
+        start_date=input_dict['start_date'] if 'start_date' in input_dict.keys() else None,
+        end_date=input_dict['end_date'] if 'end_date' in input_dict.keys() else None,
+        metrics=input_dict['metrics'] if 'metrics' in input_dict.keys() else None,
+        segment=input_dict['segment'] if 'segment' in input_dict.keys() else None,
+        filters=input_dict['filters'] if 'filters' in input_dict.keys() else None,
+        sort=input_dict['sort'] if 'sort' in input_dict.keys() else None,
+        dimensions=input_dict['dimensions'] if 'dimensions' in input_dict.keys() else None,
+        samplingLevel=input_dict['sampling_level'] if 'sampling_level' in input_dict.keys() else None
+    ).execute()
 
 
 def print_results(results):

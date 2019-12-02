@@ -54,8 +54,10 @@ def get_data_from_moat(moat_dict, database_name):
     resp = http.request('GET', 'https://api.moat.com/1/stats.json',
                         fields=moat_dict,
                         headers={'Authorization': auth_header})
-
-    data = json.loads(resp.data)
+    try:
+        data = json.loads(resp.data)
+    except TypeError:
+        data = json.loads(resp.data.decode('utf-8'))
 
     if 'error' in data.keys():
         print('Error: ' + data['error'])

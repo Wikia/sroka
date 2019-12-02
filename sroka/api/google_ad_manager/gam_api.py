@@ -59,8 +59,13 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
     try:
         # Run the report and wait for it to finish.
         report_job_id = report_downloader.WaitForReport(report_job)
-    except errors.GoogleAdsServerFault:
-        print('Default value of network code is missing from ', config.default_config_filepath)
+    except errors.GoogleAdsServerFault as e:
+        if 'AuthenticationError.NETWORK_NOT_FOUND' in str(e):
+            print('Provided network code was not found.')
+        elif 'AuthenticationError.NETWORK_CODE_REQUIRED' in str(e):
+            print('Default value of network code is missing from ', config.default_config_filepath)
+        else:
+            print('Failed to generate report. Error was: {}'.format(e))
         return
 
     except errors.AdManagerReportError as e:

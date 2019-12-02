@@ -11,6 +11,9 @@ Package providing simple Python access to data in:
 * Athena
 * Google sheets
 * s3
+* MySQL
+
+Sroka library was checked to work for Python **>=3.5 <3.8**.
 
 ## Developers
 
@@ -91,7 +94,7 @@ end up with `credentials.json` file that should be downloaded to `~/.sroka_confi
 
 
 
-## Getting access tokens to Qubole and Athena
+## Getting credentials & access tokens
 
 ### Qubole
 
@@ -111,6 +114,13 @@ The name of location without `s3://` and `/` is what you need.
 1. You should have your id, username and password from Rubicon
 2. Copy values to ```config.ini``` file in relevant fields
 
+
+### MySQL connection information
+
+1. In order to connect to a remote MySQL server, you need to provide the `host` and `port` values in the configuration. If it is accessible through a unix socket, you need to provide the path to this socket instead in the `unix_socket` configuration field.
+2. If the MySQL server is protected by user credentials, you need to provide the `user` and `password` values in the configuration.
+3. You can optionally specify the database to which you want to connect in the `database` configuration field.
+
 ## Common issues
 
 ### macOS
@@ -129,9 +139,15 @@ export LANG=en_US.UTF-8
 
 2. If numpy gets messed up during sroka installation it is probably caused by multiple versions installed. Please uninstall all using pip uninstall and then reinstall latest one.
 
+### Google APIs cached files
+
+If you encounter RefreshError similar to 
+`google.auth.exceptions.RefreshError: ('invalid_grant: Bad Request', '{\n  "error": "invalid_grant",\n  "error_description": "Bad Request"\n}')`
+, try removing all files from `~/.cache` directory.
+
 ## Credits
 
-All people that contributed to sroka development, also before going opensource (including CR and QA):
+All people that contributed to sroka development before going opensource (including CR and QA):
 * [martynaut](https://github.com/martynaut)
 * [dorotamierzwa](https://github.com/dorotamierzwa)
 * [fraszczakszymon](https://github.com/fraszczakszymon)
