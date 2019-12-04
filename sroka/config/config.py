@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import configparser
 import json
 import os
@@ -7,6 +9,24 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 default_config_filepath = os.path.expanduser('~/.sroka_config/')
+
+config_overwrite = defaultdict(dict)
+
+
+def set_config_overwrite(group, key, value):
+    """
+    Overwrite file config.
+
+    Useful if you wish to overwrite some values from file config
+    or replace it completely.
+
+    :param [str] group: Overwrite a value in this group
+    :param [str] key: Overwrite value with this key
+    :param value: Value to set
+
+    >>> set_config_overwrite('aws', 'aws_access_secret_key', 'secret_key_XXX')
+    """
+    config_overwrite[group][key] = value
 
 
 def set_google_credentials(authorized_user_file,
@@ -44,7 +64,8 @@ def get_value(group, key):
                         "make sure you're the only one allowed to read " +
                         "it by executing `chmod 600 {config}`".format(config=config_path))
     config.read(config_path)
-    return config.get(group, key)
+
+    return config_overwrite.get(group, {}).get(key, config.get(group, key))
 
 
 def has_value(group, key):
