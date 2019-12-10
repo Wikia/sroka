@@ -6,6 +6,15 @@ import sroka.config.config as config
 
 
 def neo4j_query_data(cypher, parameters=None, **kwparameters):
+
+    if type(cypher) != str:
+        print('Cypher query needs to be a string')
+        return pd.DataFrame([])
+
+    if parameters and type(parameters) != dict:
+        print('Parameters need to be a dictionary')
+        return pd.DataFrame([])
+
     neo4j_username = config.get_value('neo4j', 'neo4j_username')
     neo4j_password = config.get_value('neo4j', 'neo4j_password')
     neo4j_address = config.get_value('neo4j', 'neo4j_address')
