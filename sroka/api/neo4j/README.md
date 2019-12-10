@@ -3,13 +3,13 @@
 ## Methods
 
 
-### `neo4j_query_data(cypher, parameters=None, **kwparameters)`
+### `neo4j_query_data(cypher, parameters=None)`
 
 
 #### Arguments
 
 * string `cypher` - cypher query (required)
-* dictionary `parameters` - parameters for cypher query
+* dictionary `parameters` - parameters for cypher query (optional)
 
 #### Returns
 
