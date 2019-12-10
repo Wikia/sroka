@@ -11,6 +11,10 @@ def neo4j_query_data(cypher, parameters=None, **kwparameters):
         print('Cypher query needs to be a string')
         return pd.DataFrame([])
 
+    if len(cypher) == 0:
+        print('Cypher query cannot be empty')
+        return pd.DataFrame([])
+
     if parameters and type(parameters) != dict:
         print('Parameters need to be a dictionary')
         return pd.DataFrame([])
