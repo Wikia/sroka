@@ -12,6 +12,7 @@ Package providing simple Python access to data in:
 * Google sheets
 * s3
 * MySQL
+* neo4j
 
 Sroka library was checked to work for Python **>=3.5 <3.8**.
 
