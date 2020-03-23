@@ -127,25 +127,32 @@ def print_results(results):
         print('No Rows Found')
 
 
+def __print_sample_size(print_sample_size, results):
+    if print_sample_size:
+        if not isinstance(print_sample_size, bool):
+            raise TypeError('print_sample_size must be boolean, not {}'.format(type(print_sample_size)))
+        elif results['containsSampledData']:
+            sample_size = round(int(results['sampleSize']) / int(results['sampleSpace']) * 100, 2)
+        else:
+            sample_size = 100
+        print('Results calculated based on sample size ', sample_size, '%')
+
+
 def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
     with __ga_access(input_dict) as service:
         input_dict['sampling_level'] = sampling_level
         results = get_top_keywords(service, input_dict)
         columns = results['query']['dimensions'].split(',') + results['query']['metrics']
         df = pd.DataFrame(results['rows'], columns=columns)
+
         for column in df.columns:
             try:
                 df[column] = pd.to_numeric(df[column])
             except ValueError:
                 pass
         df.columns = [x[3:] for x in list(df.columns)]
-        if print_sample_size:
-            if not isinstance(print_sample_size, bool):
-                raise TypeError('print_sample_size must be boolean, not {}'.format(type(print_sample_size)))
-            elif results['containsSampledData']:
-                sample_size = round(int(results['sampleSize']) / int(results['sampleSpace']) * 100, 2)
-            else:
-                sample_size = 100
-            print('Results calculated based on sample size ', sample_size, '%')
+
+        __print_sample_size(print_sample_size, results)
+
         return df
 
