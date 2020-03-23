@@ -104,7 +104,7 @@ def get_top_keywords(service, input_dict):
                        'sampling_level']:
             print("{} field is not used.".format(key))
     for key in to_remove:
-            del input_dict[key]
+        del input_dict[key]
     return service.data().ga().get(
         ids=input_dict['ids'] if 'ids' in input_dict.keys() else None,
         start_date=input_dict['start_date'] if 'start_date' in input_dict.keys() else None,
