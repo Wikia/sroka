@@ -8,6 +8,9 @@ from googleapiclient.errors import HttpError
 import sroka.config.config as config
 from contextlib import contextmanager
 
+class GADataNotYetAvailable(Exception):
+    pass
+
 @contextmanager
 def __ga_access(input_dict):
     """
@@ -156,3 +159,47 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
 
         return df
 
+
+def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_pages=None, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
+    """
+    Retrieves all available data from GA using pagination.
+    Raises a GADataNotYetAvailable exception if there are no rows in the GA response.
+
+    :param request_parameters: GA filters
+    :param start_index: the index of the first element to be retrieved
+    :param page_size: the number of elements retrieved in a single request
+    :param max_pages: the max number of pages to retrieve, None if all available pages
+    :param print_sample_size: if True, prints the sample size of every request
+    :param sampling_level: the GA sampling level
+    :return: a Pandas data frame
+    """
+    with __ga_access(request_parameters) as service:
+        input_dict = dict(request_parameters)
+        input_dict["max_results"] = page_size
+        input_dict["samplingLevel"] = sampling_level
+
+        all_rows = []
+        fetched_rows = page_size
+        current_index = start_index
+        number_of_retrieved_pages = 0
+        results = None
+        while fetched_rows == page_size and (max_pages is None or number_of_retrieved_pages < max_pages):
+            input_dict['start_index'] = current_index
+            results = service.data().ga().get(**input_dict).execute()
+            if 'rows' not in results:
+                raise GADataNotYetAvailable('There were no rows in the GA response!')
+
+            rows = results['rows']
+            fetched_rows = len(rows)
+            current_index += fetched_rows
+            all_rows = all_rows + rows
+            number_of_retrieved_pages += 1
+
+            __print_sample_size(print_sample_size, results)
+            print(f'fetched {current_index - 1} of {results["totalResults"]} rows')
+
+        if not results or not all_rows:
+            return pd.DataFrame([])
+
+        columns = results['query']['dimensions'].split(',') + results['query']['metrics']
+        return pd.DataFrame(all_rows, columns=columns)
