@@ -175,8 +175,8 @@ def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_
     """
     with __ga_access(request_parameters) as service:
         input_dict = dict(request_parameters)
-        input_dict["max_results"] = page_size
-        input_dict["samplingLevel"] = sampling_level
+        input_dict['max_results'] = page_size
+        input_dict['samplingLevel'] = sampling_level
 
         all_rows = []
         fetched_rows = page_size
