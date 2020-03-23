@@ -6,6 +6,65 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 
 import sroka.config.config as config
+from contextlib import contextmanager
+
+@contextmanager
+def __ga_access(input_dict):
+    """
+    Creates a GA client and handles the API errors.
+    In case of errors, it prints the error message and returns an empty Pandas DataFrame.
+
+    :param input_dict: request parameters - for validation
+    :return: service
+    """
+    # Authenticate and construct service.
+    scope = 'https://www.googleapis.com/auth/analytics.readonly'
+    key_file_location = config.get_file_path('google_analytics')
+    authorized_user_file = os.path.expanduser('~/.cache/google_analytics.json')
+
+    credentials = config.set_google_credentials(authorized_user_file,
+                                                key_file_location,
+                                                scope)
+
+    service = discovery.build('analytics', 'v3', credentials=credentials)
+    try:
+        first_profile_id = get_first_profile_id(service)
+        if not first_profile_id:
+            print('Could not find a valid profile for this user.')
+            return pd.DataFrame([])
+        else:
+            yield service
+    except TypeError as error:
+        # Handle errors in constructing a query.
+        print(('There was an error in constructing your query : {}'.format(error)))
+        return pd.DataFrame([])
+
+    except HttpError as error:
+        # Handle API errors.
+        print(('Arg, there was an API error : {} : {}'.format(error.resp.status, error._get_reason())))
+        return pd.DataFrame([])
+
+    except RefreshError as error:
+        # Handle Auth errors.
+        print('The credentials have been revoked or expired, please re-run '
+              'the application to re-authorize' + str(error))
+        return pd.DataFrame([])
+
+    except KeyError as error:
+        # Handle wrong or missing values in query.
+        if error.args[0] == 'rows':
+            print('Your query did not return any rows.')
+        else:
+            print('There is an error or missing value in your query: {}'.format(error))
+        return pd.DataFrame([])
+
+    except AssertionError as error:
+        # Handle errors in constructing a query.
+        if not input_dict['dimensions']:
+            print('Your query is missing dimensions.')
+        else:
+            print(('There was an error in constructing your query : {}'.format(error)))
+        return pd.DataFrame([])
 
 
 def get_first_profile_id(service):
@@ -69,71 +128,24 @@ def print_results(results):
 
 
 def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
-    # Authenticate and construct service.
-    scope = 'https://www.googleapis.com/auth/analytics.readonly'
-    key_file_location = config.get_file_path('google_analytics')
-    authorized_user_file = os.path.expanduser('~/.cache/google_analytics.json')
+    with __ga_access(input_dict) as service:
+        input_dict['sampling_level'] = sampling_level
+        results = get_top_keywords(service, input_dict)
+        columns = results['query']['dimensions'].split(',') + results['query']['metrics']
+        df = pd.DataFrame(results['rows'], columns=columns)
+        for column in df.columns:
+            try:
+                df[column] = pd.to_numeric(df[column])
+            except ValueError:
+                pass
+        df.columns = [x[3:] for x in list(df.columns)]
+        if print_sample_size:
+            if not isinstance(print_sample_size, bool):
+                raise TypeError('print_sample_size must be boolean, not {}'.format(type(print_sample_size)))
+            elif results['containsSampledData']:
+                sample_size = round(int(results['sampleSize']) / int(results['sampleSpace']) * 100, 2)
+            else:
+                sample_size = 100
+            print('Results calculated based on sample size ', sample_size, '%')
+        return df
 
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = discovery.build('analytics', 'v3', credentials=credentials)
-
-    try:
-        first_profile_id = get_first_profile_id(service)
-        if not first_profile_id:
-            print('Could not find a valid profile for this user.')
-            return pd.DataFrame([])
-        else:
-            input_dict['sampling_level'] = sampling_level
-            results = get_top_keywords(service, input_dict)
-            columns = results['query']['dimensions'].split(',') + results['query']['metrics']
-            df = pd.DataFrame(results['rows'], columns=columns)
-            for column in df.columns:
-                try:
-                    df[column] = pd.to_numeric(df[column])
-                except ValueError:
-                    pass
-            df.columns = [x[3:] for x in list(df.columns)]
-            if print_sample_size:
-                if not isinstance(print_sample_size, bool):
-                    raise TypeError('print_sample_size must be boolean, not {}'.format(type(print_sample_size)))
-                elif results['containsSampledData']:
-                    sample_size = round(int(results['sampleSize']) / int(results['sampleSpace']) * 100, 2)
-                else:
-                    sample_size = 100
-                print('Results calculated based on sample size ', sample_size, '%')
-            return df
-
-    except TypeError as error:
-        # Handle errors in constructing a query.
-        print(('There was an error in constructing your query : {}'.format(error)))
-        return pd.DataFrame([])
-
-    except HttpError as error:
-        # Handle API errors.
-        print(('Arg, there was an API error : {} : {}'.format(error.resp.status, error._get_reason())))
-        return pd.DataFrame([])
-
-    except RefreshError as error:
-        # Handle Auth errors.
-        print('The credentials have been revoked or expired, please re-run '
-              'the application to re-authorize' + str(error))
-        return pd.DataFrame([])
-
-    except KeyError as error:
-        # Handle wrong or missing values in query.
-        if error.args[0] == 'rows':
-            print('Your query did not return any rows.')
-        else:
-            print('There is an error or missing value in your query: {}'.format(error))
-        return pd.DataFrame([])
-
-    except AssertionError as error:
-        # Handle errors in constructing a query.
-        if not input_dict['dimensions']:
-            print('Your query is missing dimensions.')
-        else:
-            print(('There was an error in constructing your query : {}'.format(error)))
-        return pd.DataFrame([])
