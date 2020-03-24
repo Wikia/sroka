@@ -15,7 +15,7 @@ class GADataNotYetAvailable(Exception):
 def __ga_access(input_dict):
     """
     Creates a GA client and handles the API errors.
-    In case of errors, it prints the error message and returns an empty Pandas DataFrame.
+    In case of errors, it prints the error message and propagates the exception to the caller.
 
     :param input_dict: request parameters - for validation
     :return: service
@@ -40,18 +40,18 @@ def __ga_access(input_dict):
     except TypeError as error:
         # Handle errors in constructing a query.
         print(('There was an error in constructing your query : {}'.format(error)))
-        return pd.DataFrame([])
+        raise
 
     except HttpError as error:
         # Handle API errors.
         print(('Arg, there was an API error : {} : {}'.format(error.resp.status, error._get_reason())))
-        return pd.DataFrame([])
+        raise
 
     except RefreshError as error:
         # Handle Auth errors.
         print('The credentials have been revoked or expired, please re-run '
               'the application to re-authorize' + str(error))
-        return pd.DataFrame([])
+        raise
 
     except KeyError as error:
         # Handle wrong or missing values in query.
@@ -59,7 +59,7 @@ def __ga_access(input_dict):
             print('Your query did not return any rows.')
         else:
             print('There is an error or missing value in your query: {}'.format(error))
-        return pd.DataFrame([])
+        raise
 
     except AssertionError as error:
         # Handle errors in constructing a query.
@@ -67,7 +67,10 @@ def __ga_access(input_dict):
             print('Your query is missing dimensions.')
         else:
             print(('There was an error in constructing your query : {}'.format(error)))
-        return pd.DataFrame([])
+        raise
+
+    except Exception as error:
+        print(('There was an error while handling the request: {}'.format(error)))
 
 
 def get_first_profile_id(service):
@@ -142,28 +145,34 @@ def __print_sample_size(print_sample_size, results):
 
 
 def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
-    with __ga_access(input_dict) as service:
-        input_dict['sampling_level'] = sampling_level
-        results = get_top_keywords(service, input_dict)
-        columns = results['query']['dimensions'].split(',') + results['query']['metrics']
-        df = pd.DataFrame(results['rows'], columns=columns)
+    try:
+        with __ga_access(input_dict) as service:
+            input_dict['sampling_level'] = sampling_level
+            results = get_top_keywords(service, input_dict)
+            columns = results['query']['dimensions'].split(',') + results['query']['metrics']
+            df = pd.DataFrame(results['rows'], columns=columns)
 
-        for column in df.columns:
-            try:
-                df[column] = pd.to_numeric(df[column])
-            except ValueError:
-                pass
-        df.columns = [x[3:] for x in list(df.columns)]
+            for column in df.columns:
+                try:
+                    df[column] = pd.to_numeric(df[column])
+                except ValueError:
+                    pass
+            df.columns = [x[3:] for x in list(df.columns)]
 
-        __print_sample_size(print_sample_size, results)
+            __print_sample_size(print_sample_size, results)
 
-        return df
+            return df
+    except:
+        # the error message is displayed by context manager
+        # this except clause is here just to keep the old API behavior (an empty DataFrame in case of an error)
+        return pd.DataFrame([])
 
 
 def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_pages=None, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
     """
     Retrieves all available data from GA using pagination.
     Raises a GADataNotYetAvailable exception if there are no rows in the GA response.
+    It propagates all GA exceptions to the caller.
 
     :param request_parameters: GA filters
     :param start_index: the index of the first element to be retrieved
