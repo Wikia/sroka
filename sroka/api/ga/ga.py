@@ -211,4 +211,5 @@ def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_
             return pd.DataFrame([])
 
         columns = results['query']['dimensions'].split(',') + results['query']['metrics']
+        columns = [x.strip() for x in columns]
         return pd.DataFrame(all_rows, columns=columns)
