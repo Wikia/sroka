@@ -188,19 +188,19 @@ def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_
         input_dict['samplingLevel'] = sampling_level
 
         all_rows = []
-        fetched_rows = page_size
+        fetched_rows_count = page_size
         current_index = start_index
         number_of_retrieved_pages = 0
         results = None
-        while fetched_rows == page_size and (max_pages is None or number_of_retrieved_pages < max_pages):
+        while fetched_rows_count == page_size and (max_pages is None or number_of_retrieved_pages < max_pages):
             input_dict['start_index'] = current_index
             results = service.data().ga().get(**input_dict).execute()
             if 'rows' not in results:
                 raise GADataNotYetAvailable('There were no rows in the GA response!')
 
             rows = results['rows']
-            fetched_rows = len(rows)
-            current_index += fetched_rows
+            fetched_rows_count = len(rows)
+            current_index += fetched_rows_count
             all_rows = all_rows + rows
             number_of_retrieved_pages += 1
 
