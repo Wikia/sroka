@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+from typing import Dict
 from google.auth.exceptions import RefreshError
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
@@ -168,24 +169,69 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
         return pd.DataFrame([])
 
 
-def ga_request_all_data(input_dict, start_index=1, page_size=10000, max_pages=None, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
+def ga_request_all_data(
+        input_dict: Dict,
+        start_index: int = 1,
+        page_size: int = 10000,
+        max_pages: int = None,
+        print_sample_size: bool = False,
+        sampling_level: str = 'HIGHER_PRECISION'):
     """
     Retrieves all available data from GA using pagination.
     Raises a GADataNotYetAvailable exception if there are no rows in the GA response.
     It propagates all GA exceptions to the caller.
 
-    :param input_dict: GA filters
-    :param start_index: the index of the first element to be retrieved
-    :param page_size: the number of elements retrieved in a single request
-    :param max_pages: the max number of pages to retrieve, None if all available pages
-    :param print_sample_size: if True, prints the sample size of every request
-    :param sampling_level: the GA sampling level
+    In case of invalid input parameters, it prints the error message and returns an empty DataFrame.
+
+    :param input_dict:
+        GA filters
+    :param start_index:
+        the index of the first element to be retrieved (integer, optional, default = 1, note that indexes start from 1!)
+    :param page_size:
+        the number of elements retrieved in a single request (integer, optional, default = 10000, min value = 1)
+    :param max_pages:
+        the max number of pages to retrieve, None if all available pages (integer, optional, default = None, min value = 1)
+    :param print_sample_size:
+        if True, prints the sample size of every request (boolean, optional, default = False)
+    :param sampling_level:
+        the GA sampling level (optional, default = HIGHER_PRECISION, valid values: 'DEFAULT', 'FASTER', 'HIGHER_PRECISION')
+
     :return: a Pandas data frame
     """
+    if not isinstance(input_dict, Dict):
+        print(f'input_dict={input_dict}')
+        print('input_dict must be a dictionary. You can find valid keys/values in the GA documentation')
+        return pd.DataFrame([])
+
+    if not isinstance(start_index, int) or start_index < 1:
+        print(f'start_index={start_index}')
+        print('start_index must be a positive integer! The indexing starts from 1 not from 0!')
+        return pd.DataFrame([])
+
+    if not isinstance(page_size, int) or page_size < 1:
+        print(f'page_size={page_size}')
+        print('page_size must be an integer. The minimal page size is 1.')
+        return pd.DataFrame([])
+
+    if max_pages is not None and (not isinstance(max_pages, int) or max_pages < 1):
+        print(f'max_pages={max_pages}')
+        print('max_pages must be an integer. The minimal value is 1. Use None = retrieve all available pages.')
+        return pd.DataFrame([])
+
+    if not isinstance(print_sample_size, bool):
+        print(f'print_sample_size={print_sample_size}')
+        print('print_sample_size must be a boolean value')
+        return pd.DataFrame([])
+
+    if not isinstance(sampling_level, str) or sampling_level not in ['DEFAULT', 'FASTER', 'HIGHER_PRECISION']:
+        print(f'sampling_level={sampling_level}')
+        print('sampling_level has three valid values: DEFAULT, FASTER, HIGHER_PRECISION')
+        return pd.DataFrame([])
+
     with __ga_access(input_dict) as service:
         if 'start_index' in input_dict.keys() or 'max_results' in input_dict.keys():
             print('This function overwrites start_index and max_results parameters! ' +
-                  'If you want to specify them manually, use the ga_request function instead.')
+                  'Do not include them in the input_dict parameter.')
         input_dict = dict(input_dict)
         input_dict['max_results'] = page_size
         input_dict['samplingLevel'] = sampling_level

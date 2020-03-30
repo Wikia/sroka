@@ -53,11 +53,11 @@ Note that this function overwrites the `start_index` and `max_results` values of
 #### Arguments
 
 * input_dict (obligatory) - the dictionary of GA request parameters
-* start_index - the index of the first element to be retrieved (optional, default = 1)
-* page_size - the number of elements retrieved in a single request (optional, default = 10000)
-* max_pages - the max number of pages to retrieve, None if all available pages (optional, default = None)
-* print_sample_size - if True, prints the sample size of every request (optional, default = False)
-* sampling_level - the GA sampling level (optional, default = HIGHER_PRECISION)
+* start_index - the index of the first element to be retrieved (integer, optional, default = 1, note that **indexes start from 1!**)
+* page_size - the number of elements retrieved in a single request (integer, optional, default = 10000, min value = 1)
+* max_pages - the max number of pages to retrieve, None if all available pages (integer, optional, default = None, min value = 1)
+* print_sample_size - if True, prints the sample size of every request (boolean, optional, default = False)
+* sampling_level - the GA sampling level (optional, default = HIGHER_PRECISION, valid values: 'DEFAULT', 'FASTER', 'HIGHER_PRECISION')
 
 #### Returns
 
