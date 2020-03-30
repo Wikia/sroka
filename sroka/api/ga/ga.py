@@ -183,6 +183,9 @@ def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_
     :return: a Pandas data frame
     """
     with __ga_access(request_parameters) as service:
+        if 'start_index' in request_parameters.keys() or 'max_results' in request_parameters.keys():
+            print('This function overwrites start_index and max_results parameters! ' +
+                  'If you want to specify them manually, use the ga_request function instead.')
         input_dict = dict(request_parameters)
         input_dict['max_results'] = page_size
         input_dict['samplingLevel'] = sampling_level

@@ -41,6 +41,15 @@ df_ga = ga_request(request, print_sample_size=True, sampling_level='FASTER')
 
 ### ga_request_all_data(request_parameters, start_index, page_size, max_pages, print_sample_size, sampling_level):
 
+Retrieves all data matched by the given query parameters. It internally uses request pagination to fetch all available rows.
+
+Even though the purpose of this function is to download all rows from GA at once, you can limit the range of values:
+
+* to specify the start_index use the function parameters instead of passing it as one of the input_dict values
+* instead of max_results in input_dict, you can specify the maximal number of pages to be retrieved (and their size)
+
+Note that this function overwrites the `start_index` and `max_results` values of the `input_dict` dictionary!
+
 #### Arguments
 
 * request_parameters (obligatory) - the dictionary of GA request parameters
