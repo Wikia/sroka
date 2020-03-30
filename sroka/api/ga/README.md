@@ -39,7 +39,7 @@ df_ga = ga_request(request, print_sample_size=True, sampling_level='FASTER')
 ```
 
 
-### ga_request_all_data(request_parameters, start_index, page_size, max_pages, print_sample_size, sampling_level):
+### ga_request_all_data(input_dict, start_index, page_size, max_pages, print_sample_size, sampling_level):
 
 Retrieves all data matched by the given query parameters. It internally uses request pagination to fetch all available rows.
 
@@ -52,7 +52,7 @@ Note that this function overwrites the `start_index` and `max_results` values of
 
 #### Arguments
 
-* request_parameters (obligatory) - the dictionary of GA request parameters
+* input_dict (obligatory) - the dictionary of GA request parameters
 * start_index - the index of the first element to be retrieved (optional, default = 1)
 * page_size - the number of elements retrieved in a single request (optional, default = 10000)
 * max_pages - the max number of pages to retrieve, None if all available pages (optional, default = None)

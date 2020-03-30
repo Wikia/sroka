@@ -168,13 +168,13 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
         return pd.DataFrame([])
 
 
-def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_pages=None, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
+def ga_request_all_data(input_dict, start_index=1, page_size=10000, max_pages=None, print_sample_size=False, sampling_level='HIGHER_PRECISION'):
     """
     Retrieves all available data from GA using pagination.
     Raises a GADataNotYetAvailable exception if there are no rows in the GA response.
     It propagates all GA exceptions to the caller.
 
-    :param request_parameters: GA filters
+    :param input_dict: GA filters
     :param start_index: the index of the first element to be retrieved
     :param page_size: the number of elements retrieved in a single request
     :param max_pages: the max number of pages to retrieve, None if all available pages
@@ -182,11 +182,11 @@ def ga_request_all_data(request_parameters, start_index=1, page_size=10000, max_
     :param sampling_level: the GA sampling level
     :return: a Pandas data frame
     """
-    with __ga_access(request_parameters) as service:
-        if 'start_index' in request_parameters.keys() or 'max_results' in request_parameters.keys():
+    with __ga_access(input_dict) as service:
+        if 'start_index' in input_dict.keys() or 'max_results' in input_dict.keys():
             print('This function overwrites start_index and max_results parameters! ' +
                   'If you want to specify them manually, use the ga_request function instead.')
-        input_dict = dict(request_parameters)
+        input_dict = dict(input_dict)
         input_dict['max_results'] = page_size
         input_dict['samplingLevel'] = sampling_level
 
