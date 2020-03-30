@@ -63,6 +63,9 @@ def get_file_path(group):
         return os.environ.get('CONFIG_GOOGLE_ANALYTICS', os.path.join(default_config_filepath, 'client_secrets.json'))
     if group == 'google_drive':
         return os.environ.get('CONFIG_GOOGLE_DRIVE', os.path.join(default_config_filepath, 'credentials.json'))
+    if group == 'google_bigquery':
+        return os.environ.get('GOOGLE_APPLICATION_CREDENTIALS',
+                              os.path.join(default_config_filepath, 'bigquery_credentials.json'))
 
 
 def setup_env_variables(filepath=None):
