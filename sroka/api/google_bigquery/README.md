@@ -39,7 +39,7 @@ query_bigquery("""
 #### Arguments
 
 * string `job_id` - pass no of query in order to download data from already done query 
-(without project name and region, everythin after `.`)
+(without project name and region, everything after `.`)
 * string `filename` - directory with filename where results should be stored 
 (optional, if filename=None results are returned as pandas DataFrame)
 
