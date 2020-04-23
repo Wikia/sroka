@@ -241,17 +241,21 @@ def ga_request_all_data(
         current_index = start_index
         number_of_retrieved_pages = 0
         results = None
+        is_first_page = True
         while fetched_rows_count == page_size and (max_pages is None or number_of_retrieved_pages < max_pages):
             input_dict['start_index'] = current_index
             results = service.data().ga().get(**input_dict).execute()
-            if 'rows' not in results:
+            if 'rows' not in results and is_first_page:
                 raise GADataNotYetAvailable('There were no rows in the GA response!')
+            elif 'rows' not in results:  # special case for the number of available rows equal to a multiple of the page size
+                break
 
             rows = results['rows']
             fetched_rows_count = len(rows)
             current_index += fetched_rows_count
             all_rows = all_rows + rows
             number_of_retrieved_pages += 1
+            is_first_page = False
 
             __print_sample_size(print_sample_size, results)
             print(f'fetched {current_index - 1} of {results["totalResults"]} rows')
