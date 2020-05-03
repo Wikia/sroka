@@ -5,12 +5,13 @@
 Package providing simple Python access to data in:
 * Google Analytics
 * Google AdManager (GAM earlier DoubleClick for Publishers, DFP)
+* Google sheets
+* Google BigQuery
 * MOAT
 * Qubole
 * Rubicon
-* Athena
-* Google sheets
-* s3
+* AWS Athena
+* AWS s3
 * MySQL
 * neo4j
 
@@ -46,6 +47,8 @@ in home folder create `~/.sroka_config` (hidden folder) file where you will stor
 * ```config.ini``` file based on ```config.sample.ini``` with information to access Qubole, MOAT, Athena, S3 and Rubicon
 * ```client_secrets.json``` for GA access
 * ```ad_manager.json``` for GAM access
+* ```credentials.json``` for Google sheets access
+* ```bigquery_credentials.json``` for BigQuery access
 
 Alternatively, you may set localization of your files during analysis:
 
@@ -53,12 +56,16 @@ Alternatively, you may set localization of your files during analysis:
 from sroka.config.config import setup_env_variables
 from sroka.config.config import setup_client_secret
 from sroka.config.config import setup_admanager_config
+from sroka.config.config import setup_bigquery_config
+from sroka.config.config import setup_google_sheets_credentials
 setup_env_variables('/file_path/config.ini')
 setup_client_secret('/file_path/client_secrets.json')
 setup_admanager_config('/file_path/ad_manager.json')
+setup_bigquery_config('/file_path/bigquery_credentials.json')
+setup_google_sheets_credentials('/file_path/credentials.json')
 ```
 
-## Getting GA, GAM ang Google docs jsons with secrets
+## Getting GA, GAM, BigQuery and Google docs jsons with secrets
 
 ### Google Analytics
 
@@ -93,6 +100,10 @@ Go to [link](https://developers.google.com/sheets/api/quickstart/python) and cli
 `ENABLE THE GOOGLE SHEETS API` to create a project with access to google sheets. You should
 end up with `credentials.json` file that should be downloaded to `~/.sroka_config` folder.
 
+### Google BigQuery credentials
+Go to [link](https://cloud.google.com/bigquery/docs/reference/libraries) and follow up instructions
+within ```Setting up authentication``` section. You should end up with ```bigquery_credentials.json```
+json file that should be downloaded to `~/.sroka_config` folder. 
 
 
 ## Getting credentials & access tokens
