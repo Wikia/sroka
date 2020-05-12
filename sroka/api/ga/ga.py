@@ -9,8 +9,10 @@ from googleapiclient.errors import HttpError
 import sroka.config.config as config
 from contextlib import contextmanager
 
+
 class GADataNotYetAvailable(Exception):
     pass
+
 
 @contextmanager
 def __ga_access(input_dict):
@@ -199,32 +201,32 @@ def ga_request_all_data(
     :return: a Pandas data frame
     """
     if not isinstance(input_dict, Dict):
-        print(f'input_dict={input_dict}')
+        print('input_dict={}'.format(input_dict))
         print('input_dict must be a dictionary. You can find valid keys/values in the GA documentation')
         return pd.DataFrame([])
 
     if not isinstance(start_index, int) or start_index < 1:
-        print(f'start_index={start_index}')
+        print('start_index={}'.format(start_index))
         print('start_index must be a positive integer! The indexing starts from 1 not from 0!')
         return pd.DataFrame([])
 
     if not isinstance(page_size, int) or page_size < 1:
-        print(f'page_size={page_size}')
+        print('page_size={}'.format(page_size))
         print('page_size must be an integer. The minimal page size is 1.')
         return pd.DataFrame([])
 
     if max_pages is not None and (not isinstance(max_pages, int) or max_pages < 1):
-        print(f'max_pages={max_pages}')
+        print('max_pages={}'.format(max_pages))
         print('max_pages must be an integer. The minimal value is 1. Use None = retrieve all available pages.')
         return pd.DataFrame([])
 
     if not isinstance(print_sample_size, bool):
-        print(f'print_sample_size={print_sample_size}')
+        print('print_sample_size={}'.format(print_sample_size))
         print('print_sample_size must be a boolean value')
         return pd.DataFrame([])
 
     if not isinstance(sampling_level, str) or sampling_level not in ['DEFAULT', 'FASTER', 'HIGHER_PRECISION']:
-        print(f'sampling_level={sampling_level}')
+        print('sampling_level={}'.format(sampling_level))
         print('sampling_level has three valid values: DEFAULT, FASTER, HIGHER_PRECISION')
         return pd.DataFrame([])
 
@@ -247,7 +249,8 @@ def ga_request_all_data(
             results = service.data().ga().get(**input_dict).execute()
             if 'rows' not in results and is_first_page:
                 raise GADataNotYetAvailable('There were no rows in the GA response!')
-            elif 'rows' not in results:  # special case for the number of available rows equal to a multiple of the page size
+            elif 'rows' not in results:
+                # special case for the number of available rows equal to a multiple of the page size
                 break
 
             rows = results['rows']
@@ -258,7 +261,7 @@ def ga_request_all_data(
             is_first_page = False
 
             __print_sample_size(print_sample_size, results)
-            print(f'fetched {current_index - 1} of {results["totalResults"]} rows')
+            print('fetched {} of {} rows'.format(current_index - 1, results["totalResults"]))
 
         if not results or not all_rows:
             return pd.DataFrame([])
