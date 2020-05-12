@@ -63,6 +63,9 @@ def get_file_path(group):
         return os.environ.get('CONFIG_GOOGLE_ANALYTICS', os.path.join(default_config_filepath, 'client_secrets.json'))
     if group == 'google_drive':
         return os.environ.get('CONFIG_GOOGLE_DRIVE', os.path.join(default_config_filepath, 'credentials.json'))
+    if group == 'google_bigquery':
+        return os.environ.get('GOOGLE_APPLICATION_CREDENTIALS',
+                              os.path.join(default_config_filepath, 'bigquery_credentials.json'))
 
 
 def setup_env_variables(filepath=None):
@@ -87,6 +90,14 @@ def setup_client_secret(filepath=None):
     if not os.path.exists(config_filepath):
         raise Exception('Config file {} was not found!'.format(config_filepath))
     os.environ['CONFIG_GOOGLE_ANALYTICS'] = config_filepath
+
+
+def setup_bigquery_config(filepath=None):
+    """Function that sets configuration for BigQuery file path."""
+    config_filepath = filepath
+    if not os.path.exists(config_filepath):
+        raise Exception('Config file {} was not found!'.format(config_filepath))
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config_filepath
 
 
 def setup_google_sheets_credentials(filepath=None):
