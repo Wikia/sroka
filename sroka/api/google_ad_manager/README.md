@@ -2,7 +2,7 @@
 
 ## Methods
 
-### `get_data_from_admanager(query, dimensions, columns, start_date, stop_date, custom_field_id, network_code)`
+### `get_data_from_admanager(query, dimensions, columns, start_date, stop_date, custom_field_id, dimension_attributes, network_code)`
 
 #### Arguments
 
@@ -13,7 +13,7 @@
 * dict `start_date` - obligatory
 * dict `stop_date` - obligatory
 * list `custom_field_id` -  list of ints, default=[], not obligatory  IMPORTANT: to use custom field id corresponding dimension is needed
-* list `dimension_attributes` -  list of strings, default=[], not obligatory  IMPORTANT: to use deimension attribute corresponding dimension is needed
+* list `dimension_attributes` -  list of strings, default=[], not obligatory  IMPORTANT: to use dimension attribute corresponding dimension is needed
 * int `network_code` - default value taken from config.ini file. If the same service account has access to more than one network, the default value can be overwritten with this argument.
 
 What is `custom_field_id` ?
