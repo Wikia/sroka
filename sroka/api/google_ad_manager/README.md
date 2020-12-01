@@ -21,7 +21,7 @@ What is `custom_field_id` ?
 * To find id of custom field go to GAM dashboard -> Admin -> Global settings -> Custom Fields -> Choose Custom Field and id can be found in URL
 
 What are `dimension_attributes` ?
-* Dimension attributes provide additional fields associated with a dimension like start/end date, goal, pacing. These fields can be used to organize objects in reports.
+* Dimension attributes provide additional fields associated with a dimension like start/end date, goal, pacing. These fields can be used to organize objects in reports and get non-metrical informations regarding specific dimension.
 * List of the dimension atrributes can be found on [Google Ad Manager Help](https://support.google.com/admanager/answer/2875225?hl=en&ref_topic=7492017) or [GAM API documentation](https://developers.google.com/ad-manager/api/reference/v202011/ReportService.DimensionAttribute)
 
 
