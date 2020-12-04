@@ -16,11 +16,14 @@ except (KeyError, NoOptionError):
     APPLICATION_NAME = 'Application name'
 
 
-def get_data_from_admanager(query, dimensions, columns, start_date, end_date, custom_field_id=None, network_code=None):
+def get_data_from_admanager(query, dimensions, columns, start_date, end_date, custom_field_id=None, dimension_attributes=None, network_code=None):
 
     if not custom_field_id:
         custom_field_id = []
-
+    
+    if not dimension_attributes:
+        dimension_attributes = []
+    
     if not network_code:
         try:
             network_code = config.get_value('google_ad_manager', 'network_code')
@@ -47,6 +50,7 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
           'statement': filter_statement,
           'columns': columns,
           'customFieldIds': custom_field_id,
+          'dimensionAttributes': dimension_attributes,
           'dateRangeType': 'CUSTOM_DATE',
           'startDate': start_date,
           'endDate': end_date,
