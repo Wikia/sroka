@@ -20,10 +20,10 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
 
     if not custom_field_id:
         custom_field_id = []
-    
+
     if not dimension_attributes:
         dimension_attributes = []
-    
+
     if not network_code:
         try:
             network_code = config.get_value('google_ad_manager', 'network_code')
@@ -95,18 +95,17 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
 
 
 def get_users_from_admanager(query, dimensions, network_code=None):
-    
+
     user_df = pd.DataFrame()
-    
+
     dimensions_df = pd.DataFrame()
-        
-    #.Where() handles filtering with admanager method, while statement_query handles queries with WHERE clause
-    
-    statement_query = query.replace("WHERE ", "")
-    
-    statement = (ad_manager.StatementBuilder()
-               .Where((statement_query)))
-    
+
+    # .Where() handles filtering with admanager method, while statement_query handles queries with WHERE clause
+
+    statement_query = query.upper().replace("WHERE ", "")
+
+    statement = (ad_manager.StatementBuilder().Where((statement_query)))
+
     if not network_code:
         try:
             network_code = config.get_value('google_ad_manager', 'network_code')
@@ -121,36 +120,38 @@ def get_users_from_admanager(query, dimensions, network_code=None):
 
     # Initialize the GAM client.
     gam_client = ad_manager.AdManagerClient.LoadFromString(yaml_string)
-    
-    user_service = gam_client.GetService('UserService')
-    
-    
-    try:
 
+    user_service = gam_client.GetService('UserService')
+
+    try:
         while True:
             response = user_service.getUsersByStatement(statement.ToStatement())
             if 'results' in response and len(response['results']):
-              for user in response['results']:
+                for user in response['results']:
 
-                for dimension in dimensions:
-                    dimension_value = [user[dimension]]
-                    dimensions_df[dimension] = dimension_value
+                    for dimension in dimensions:
+                        try:
+                            dimension_value = [user[dimension]]
+                            dimensions_df[dimension] = dimension_value
+                        except KeyError as e:
+                            print('Failed to generate user list. Incorrect dimension: {}'.format(e))
+                            return    
 
-                user_df = user_df.append(dimensions_df, sort=False)
-              statement.offset += statement.limit
+                    user_df = user_df.append(dimensions_df, sort=False)
+                statement.offset += statement.limit
             else:
-              break
+                break
         return user_df
-        
+
     except errors.GoogleAdsServerFault as e:
         if 'AuthenticationError.NETWORK_NOT_FOUND' in str(e):
             print('Provided network code was not found.')
         elif 'AuthenticationError.NETWORK_CODE_REQUIRED' in str(e):
             print('Default value of network code is missing from ', config.default_config_filepath)
         else:
-            print('Failed to generate report. Error was: {}'.format(e))
+            print('Failed to generate user list. Error was: {}'.format(e))
         return
 
     except errors.AdManagerReportError as e:
-        print('Failed to generate report. Error was: {}'.format(e))
+        print('Failed to generate user list. Error was: {}'.format(e))
         return
