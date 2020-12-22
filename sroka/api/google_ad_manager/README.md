@@ -41,7 +41,7 @@ start_month = '08'
 end_month = '08'
 year = '2017'
 
-# Data from GAM - orders
+# Data from GAM - report
 query = "WHERE CUSTOM_TARGETING_VALUE_ID=12345"
 dimensions = ['DATE', 'LINE_ITEM_NAME']
 dimension_attributes = ['LINE_ITEM_GOAL_QUANTITY']
@@ -60,7 +60,7 @@ data = get_data_from_admanager(query, dimensions, columns, start_date, stop_date
 
 ```
 
-### `def get_users_from_admanager(query, dimensions, network_code)`
+### `get_users_from_admanager(query, dimensions, network_code)`
 
 #### Arguments
 
@@ -78,7 +78,7 @@ data = get_data_from_admanager(query, dimensions, columns, start_date, stop_date
 ```python
 from sroka.api.google_ad_manager.gam_api import get_users_from_admanager
 
-# Data from GAM - orders
+# Data from GAM - user list
 query = "WHERE roleName IN ('Administrator')"
 dimensions = ['id', 'name']
 
