@@ -66,7 +66,7 @@ data = get_data_from_admanager(query, dimensions, columns, start_date, stop_date
 
 
 * string `query` - obligatory (does not require WHERE clause)
-* list `dimensions` - obligatory IMPORTANT: roleName is readonly attribute
+* list `dimensions` - obligatory IMPORTANT: roleName is a readonly attribute
 * int `network_code` - default value taken from config.ini file. If the same service account has access to more than one network, the default value can be overwritten with this argument.
 
 #### Returns
@@ -83,5 +83,31 @@ query = "WHERE roleName IN ('Administrator')"
 dimensions = ['id', 'name']
 
 data = get_users_from_admanager(query, dimensions, network_code=1234)
+
+```
+
+### `get_companies_from_admanager(query, dimensions, network_code)`
+
+#### Arguments
+
+
+* string `query` - obligatory (does not require WHERE clause)
+* list `dimensions` - obligatory
+* int `network_code` - default value taken from config.ini file. If the same service account has access to more than one network, the default value can be overwritten with this argument.
+
+#### Returns
+
+* pandas.DataFrame
+
+## Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_api import get_companies_from_admanager
+
+# Data from GAM - company list
+query = "WHERE type IN ('Advertiser')"
+dimensions = ['id', 'name']
+
+data = get_companies_from_admanager(query, dimensions, network_code=1234)
 
 ```

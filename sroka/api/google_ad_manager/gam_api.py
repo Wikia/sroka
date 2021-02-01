@@ -155,3 +155,65 @@ def get_users_from_admanager(query, dimensions, network_code=None):
     except errors.AdManagerReportError as e:
         print('Failed to generate user list. Error was: {}'.format(e))
         return
+
+def get_companies_from_admanager(query, dimensions, network_code=None):
+
+    company_df = pd.DataFrame()
+
+    dimensions_df = pd.DataFrame()
+
+    # .Where() handles filtering with admanager method, while statement_query handles queries with WHERE clause
+
+    statement_query = query.upper().replace("WHERE ", "")
+
+    statement = (ad_manager.StatementBuilder().Where((statement_query)))
+
+    if not network_code:
+        try:
+            network_code = config.get_value('google_ad_manager', 'network_code')
+        except (KeyError, NoOptionError):
+            print('No network code was provided')
+            return pd.DataFrame([])
+
+    yaml_string = "ad_manager: " + "\n" + \
+        "  application_name: " + APPLICATION_NAME + "\n" + \
+        "  network_code: " + str(network_code) + "\n" + \
+        "  path_to_private_key_file: " + KEY_FILE + "\n"
+
+    # Initialize the GAM client.
+    gam_client = ad_manager.AdManagerClient.LoadFromString(yaml_string)
+
+    company_service = gam_client.GetService('CompanyService')
+
+    try:
+        while True:
+            response = company_service.getCompaniesByStatement(statement.ToStatement())
+            if 'results' in response and len(response['results']):
+                for company in response['results']:
+
+                    for dimension in dimensions:
+                        try:
+                            dimension_value = [company[dimension]]
+                            dimensions_df[dimension] = dimension_value
+                        except KeyError as e:
+                            print('Failed to generate company list. Incorrect dimension: {}'.format(e))
+                            return    
+
+                    company_df = company_df.append(dimensions_df, sort=False)
+                statement.offset += statement.limit
+            else:
+                break
+        return company_df
+
+    except errors.GoogleAdsServerFault as e:
+        if 'AuthenticationError.NETWORK_NOT_FOUND' in str(e):
+            print('Provided network code was not found.')
+        elif 'AuthenticationError.NETWORK_CODE_REQUIRED' in str(e):
+            print('Default value of network code is missing from ', config.default_config_filepath)
+        else:
+            print('Failed to generate company list. Error was: {}'.format(e))
+        return
+
+    except errors.AdManagerReportError as e:
+        print('Failed to generate company list. Error was: {}'.format(e))
+        return    
