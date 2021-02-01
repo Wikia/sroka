@@ -41,7 +41,7 @@ start_month = '08'
 end_month = '08'
 year = '2017'
 
-# Data from GAM - orders
+# Data from GAM - report
 query = "WHERE CUSTOM_TARGETING_VALUE_ID=12345"
 dimensions = ['DATE', 'LINE_ITEM_NAME']
 dimension_attributes = ['LINE_ITEM_GOAL_QUANTITY']
@@ -57,5 +57,31 @@ stop_date = {'year': year,
              'day': end_day}
 
 data = get_data_from_admanager(query, dimensions, columns, start_date, stop_date, custom_field_id=custom_field_id, dimension_attributes=dimension_attributes, network_code=1234)
+
+```
+
+### `get_users_from_admanager(query, dimensions, network_code)`
+
+#### Arguments
+
+
+* string `query` - obligatory (does not require WHERE clause)
+* list `dimensions` - obligatory IMPORTANT: roleName is readonly attribute
+* int `network_code` - default value taken from config.ini file. If the same service account has access to more than one network, the default value can be overwritten with this argument.
+
+#### Returns
+
+* pandas.DataFrame
+
+## Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_api import get_users_from_admanager
+
+# Data from GAM - user list
+query = "WHERE roleName IN ('Administrator')"
+dimensions = ['id', 'name']
+
+data = get_users_from_admanager(query, dimensions, network_code=1234)
 
 ```
