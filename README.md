@@ -96,9 +96,12 @@ You should end up with .json (!) file with credentials
 
 ### Google drive sheets credentials
 
-Go to [link](https://developers.google.com/sheets/api/quickstart/python) and click blue button
-`ENABLE THE GOOGLE SHEETS API` to create a project with access to google sheets. You should
-end up with `credentials.json` file that should be downloaded to `~/.sroka_config` folder.
+In order to authorize in Google Sheets you need to generate credentials in Google Console:
+* [Create project and enable Sheets API](https://developers.google.com/workspace/guides/create-project)
+* [Configure OAuth consent screen](https://developers.google.com/workspace/guides/create-credentials#configure_the_oauth_consent_screen)
+* [Add desktop credentials](https://developers.google.com/workspace/guides/create-credentials#desktop)
+
+You should end up with `credentials.json` file that should be downloaded to `~/.sroka_config` folder.
 
 ### Google BigQuery credentials
 Go to [link](https://cloud.google.com/bigquery/docs/reference/libraries) and follow up instructions
