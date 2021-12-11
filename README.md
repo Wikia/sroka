@@ -29,6 +29,7 @@ Check style with flake8:
 flake8 .
 ```
 
+Please target Pull Requests against `dev` branch.
 
 ## Installation
 

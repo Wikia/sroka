@@ -73,4 +73,3 @@ def query_mysql(query: str, filename=None):
         df.to_csv(filename)
     except OSError as e:
         print('Unable to write on filesystem: {}'.format(e))
-

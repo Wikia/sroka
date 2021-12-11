@@ -192,11 +192,13 @@ def ga_request_all_data(
     :param page_size:
         the number of elements retrieved in a single request (integer, optional, default = 10000, min value = 1)
     :param max_pages:
-        the max number of pages to retrieve, None if all available pages (integer, optional, default = None, min value = 1)
+        the max number of pages to retrieve, None if all available pages (integer, optional, default = None,
+        min value = 1)
     :param print_sample_size:
         if True, prints the sample size of every request (boolean, optional, default = False)
     :param sampling_level:
-        the GA sampling level (optional, default = HIGHER_PRECISION, valid values: 'DEFAULT', 'FASTER', 'HIGHER_PRECISION')
+        the GA sampling level (optional, default = HIGHER_PRECISION, valid values: 'DEFAULT', 'FASTER',
+        'HIGHER_PRECISION')
 
     :return: a Pandas data frame
     """
