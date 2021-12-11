@@ -157,6 +157,7 @@ def get_users_from_admanager(query, dimensions, network_code=None):
         print('Failed to generate user list. Error was: {}'.format(e))
         return
 
+
 def get_companies_from_admanager(query, dimensions, network_code=None):
 
     company_df = pd.DataFrame()
@@ -198,7 +199,7 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
                             dimensions_df[dimension] = dimension_value
                         except KeyError as e:
                             print('Failed to generate company list. Incorrect dimension: {}'.format(e))
-                            return    
+                            return
 
                     company_df = company_df.append(dimensions_df, sort=False)
                 statement.offset += statement.limit
@@ -217,4 +218,4 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
 
     except errors.AdManagerReportError as e:
         print('Failed to generate company list. Error was: {}'.format(e))
-        return    
+        return
