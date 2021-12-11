@@ -16,7 +16,8 @@ except (KeyError, NoOptionError):
     APPLICATION_NAME = 'Application name'
 
 
-def get_data_from_admanager(query, dimensions, columns, start_date, end_date, custom_field_id=None, dimension_attributes=None, network_code=None):
+def get_data_from_admanager(query, dimensions, columns, start_date, end_date, custom_field_id=None,
+                            dimension_attributes=None, network_code=None):
 
     if not custom_field_id:
         custom_field_id = []
@@ -135,7 +136,7 @@ def get_users_from_admanager(query, dimensions, network_code=None):
                             dimensions_df[dimension] = dimension_value
                         except KeyError as e:
                             print('Failed to generate user list. Incorrect dimension: {}'.format(e))
-                            return    
+                            return
 
                     user_df = user_df.append(dimensions_df, sort=False)
                 statement.offset += statement.limit
