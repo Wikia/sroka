@@ -16,6 +16,24 @@ except (KeyError, NoOptionError):
     APPLICATION_NAME = 'Application name'
 
 
+def init_gam_connection(network_code=None):
+
+    if not network_code:
+        try:
+            network_code = config.get_value('google_ad_manager', 'network_code')
+        except (KeyError, NoOptionError):
+            print('No network code was provided')
+            return pd.DataFrame([])
+    yaml_string = "ad_manager: " + "\n" + \
+                  "  application_name: " + APPLICATION_NAME + "\n" + \
+                  "  network_code: " + str(network_code) + "\n" + \
+                  "  path_to_private_key_file: " + KEY_FILE + "\n"
+
+    # Initialize the GAM client.
+    gam_client = ad_manager.AdManagerClient.LoadFromString(yaml_string)
+    return gam_client
+
+
 def get_data_from_admanager(query, dimensions, columns, start_date, end_date, custom_field_id=None,
                             dimension_attributes=None, network_code=None):
 
@@ -25,20 +43,7 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
     if not dimension_attributes:
         dimension_attributes = []
 
-    if not network_code:
-        try:
-            network_code = config.get_value('google_ad_manager', 'network_code')
-        except (KeyError, NoOptionError):
-            print('No network code was provided')
-            return pd.DataFrame([])
-
-    yaml_string = "ad_manager: " + "\n" + \
-        "  application_name: " + APPLICATION_NAME + "\n" + \
-        "  network_code: " + str(network_code) + "\n" + \
-        "  path_to_private_key_file: " + KEY_FILE + "\n"
-
-    # Initialize the GAM client.
-    gam_client = ad_manager.AdManagerClient.LoadFromString(yaml_string)
+    gam_client = init_gam_connection(network_code)
 
     # Create statement object to filter for an order.
 
@@ -105,22 +110,9 @@ def get_users_from_admanager(query, dimensions, network_code=None):
 
     statement_query = query.upper().replace("WHERE ", "")
 
-    statement = (ad_manager.StatementBuilder().Where((statement_query)))
+    statement = ad_manager.StatementBuilder().Where(statement_query)
 
-    if not network_code:
-        try:
-            network_code = config.get_value('google_ad_manager', 'network_code')
-        except (KeyError, NoOptionError):
-            print('No network code was provided')
-            return pd.DataFrame([])
-
-    yaml_string = "ad_manager: " + "\n" + \
-        "  application_name: " + APPLICATION_NAME + "\n" + \
-        "  network_code: " + str(network_code) + "\n" + \
-        "  path_to_private_key_file: " + KEY_FILE + "\n"
-
-    # Initialize the GAM client.
-    gam_client = ad_manager.AdManagerClient.LoadFromString(yaml_string)
+    gam_client = init_gam_connection(network_code)
 
     user_service = gam_client.GetService('UserService')
 
@@ -168,22 +160,9 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
 
     statement_query = query.upper().replace("WHERE ", "")
 
-    statement = (ad_manager.StatementBuilder().Where((statement_query)))
+    statement = ad_manager.StatementBuilder().Where(statement_query)
 
-    if not network_code:
-        try:
-            network_code = config.get_value('google_ad_manager', 'network_code')
-        except (KeyError, NoOptionError):
-            print('No network code was provided')
-            return pd.DataFrame([])
-
-    yaml_string = "ad_manager: " + "\n" + \
-        "  application_name: " + APPLICATION_NAME + "\n" + \
-        "  network_code: " + str(network_code) + "\n" + \
-        "  path_to_private_key_file: " + KEY_FILE + "\n"
-
-    # Initialize the GAM client.
-    gam_client = ad_manager.AdManagerClient.LoadFromString(yaml_string)
+    gam_client = init_gam_connection(network_code)
 
     company_service = gam_client.GetService('CompanyService')
 
