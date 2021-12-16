@@ -18,28 +18,48 @@ except (KeyError, NoOptionError):
     APPLICATION_NAME = 'Application name'
 
 
-def dict_type_checker(dict_argument, argument_name):
-    if dict_argument and type(dict_argument) != dict:
-        print(f"""{argument_name} needs to be a dict""")
-        return "Incorrect type"
+def dict_type_checker(dict_argument, argument_name, mandatory=True):
+    if mandatory:
+        if type(dict_argument) != dict:
+            print(f"""{argument_name} needs to be a dict""")
+            return "Incorrect type"
+    else:
+        if dict_argument and type(dict_argument) != dict:
+            print(f"""{argument_name} needs to be a dict""")
+            return "Incorrect type"
 
 
-def int_type_checker(int_argument, argument_name):
-    if int_argument and type(int_argument) != int:
-        print(f"""{argument_name} needs to be an integer""")
-        return "Incorrect type"
+def int_type_checker(int_argument, argument_name, mandatory=True):
+    if mandatory:
+        if type(int_argument) != int:
+            print(f"""{argument_name} needs to be an integer""")
+            return "Incorrect type"
+    else:
+        if int_argument and type(int_argument) != int:
+            print(f"""{argument_name} needs to be an integer""")
+            return "Incorrect type"
 
 
-def list_type_checker(list_argument, argument_name):
-    if list_argument and type(list_argument) != list:
-        print(f"""{argument_name} needs to be a list""")
-        return "Incorrect type"
+def list_type_checker(list_argument, argument_name, mandatory=True):
+    if mandatory:
+        if type(list_argument) != list:
+            print(f"""{argument_name} needs to be a list""")
+            return "Incorrect type"
+    else:
+        if list_argument and type(list_argument) != list:
+            print(f"""{argument_name} needs to be a list""")
+            return "Incorrect type"
 
 
-def str_type_checker(str_argument, argument_name):
-    if str_argument and type(str_argument) != str:
-        print(f"""{argument_name} needs to be a string""")
-        return "Incorrect type"
+def str_type_checker(str_argument, argument_name, mandatory=True):
+    if mandatory:
+        if type(str_argument) != str:
+            print(f"""{argument_name} needs to be a string""")
+            return "Incorrect type"
+    else:
+        if str_argument and type(str_argument) != str:
+            print(f"""{argument_name} needs to be a string""")
+            return "Incorrect type"
 
 
 def init_gam_connection(network_code=None):
@@ -72,9 +92,9 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
                      list_type_checker(columns, "columns"),
                      dict_type_checker(start_date, "start_date"),
                      dict_type_checker(end_date, "end_date"),
-                     list_type_checker(custom_field_id, "custom_field_id"),
-                     list_type_checker(dimension_attributes, "dimmension_attributes"),
-                     int_type_checker(network_code, "network_code")]
+                     list_type_checker(custom_field_id, "custom_field_id", False),
+                     list_type_checker(dimension_attributes, "dimmension_attributes", False),
+                     int_type_checker(network_code, "network_code", False)]
 
     if "Incorrect type" in list_of_types:
         return
@@ -139,7 +159,7 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
 def get_users_from_admanager(query, dimensions, network_code=None):
     list_of_types = [str_type_checker(query, "query"),
                      list_type_checker(dimensions, "dimensions"),
-                     int_type_checker(network_code, "network_code")]
+                     int_type_checker(network_code, "network_code", False)]
 
     if "Incorrect type" in list_of_types:
         return
@@ -195,7 +215,7 @@ def get_users_from_admanager(query, dimensions, network_code=None):
 def get_companies_from_admanager(query, dimensions, network_code=None):
     list_of_types = [str_type_checker(query, "query"),
                      list_type_checker(dimensions, "dimensions"),
-                     int_type_checker(network_code, "network_code")]
+                     int_type_checker(network_code, "network_code", False)]
 
     if "Incorrect type" in list_of_types:
         return
