@@ -15,7 +15,7 @@ Package providing simple Python access to data in:
 * MySQL
 * neo4j
 
-Sroka library was checked to work for Python **>=3.5**.
+Sroka library was checked to work for Python **>=3.6**.
 
 ## Developers
 
