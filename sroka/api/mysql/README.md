@@ -13,12 +13,18 @@ Here are the configuration variables that the `mysql` connector supports:
 
 ## Methods
 
-### `query_mysql(input_query, filename)`
+### `query_mysql(input_query, filename, host=None, port=None, unix_socket=None, user=None, password=None, database=None)`
 
 #### Arguments
 
 * string `input_query` - query to run
 * string `filename` - path to the file in which to store the results (optional, if `filename=None`, results are returned as a [`pandas`](https://pandas.pydata.org/pandas-docs/stable/) [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/reference/frame.html))
+* string `host` - see description in `Configuration` section
+* string `port` - see description in `Configuration` section
+* string `unix_socket` - see description in `Configuration` section
+* string `user` - see description in `Configuration` section
+* string `password` - see description in `Configuration` section
+* string `database` - see description in `Configuration` section
 
 #### Returns
 
@@ -42,5 +48,13 @@ dataframe = query_mysql("""
     WHERE year='2018' and month='10' and day='07'
     LIMIT 10
 """)
+
+## Queries database with configuration different from config.ini file
+dataframe = query_mysql("""
+    SELECT * FROM table
+    WHERE year='2018' and month='10' and day='07'
+    LIMIT 10
+""")
+
 ```
 
