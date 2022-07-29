@@ -54,7 +54,7 @@ dataframe = query_mysql("""
     SELECT * FROM table
     WHERE year='2018' and month='10' and day='07'
     LIMIT 10
-""")
+""", port='1111', database='db_name')
 
 ```
 
