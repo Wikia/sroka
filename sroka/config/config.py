@@ -17,7 +17,7 @@ def set_google_credentials(authorized_user_file,
         credentials = Credentials.from_authorized_user_file(authorized_user_file, scopes=[scope])
     except FileNotFoundError:
         flow = InstalledAppFlow.from_client_secrets_file(key_file_location, [scope])
-        credentials = flow.run_console()
+        credentials = flow.run_local_server()
         os.makedirs(os.path.expanduser('~/.cache/'), exist_ok=True)
         with open(authorized_user_file, 'w') as file:
             json.dump({
