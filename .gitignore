@@ -13,3 +13,4 @@ sroka.egg-info/
 config.ini
 sroka_test_file.py
 build
+.vscode/
