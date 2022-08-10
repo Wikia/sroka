@@ -3,4 +3,4 @@ set -e
 # Run flake8
 flake8 .
 
-python ./.githooks/isort_hooks.py
+python3 ./.githooks/isort_hooks.py
