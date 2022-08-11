@@ -1,26 +1,47 @@
+import os
+import shutil
 from argparse import ArgumentParser as _ArgumentParser
+from pathlib import Path
 from typing import Callable
 
 _acts = {}
 
 
-def _action(func: Callable[[str, bool], None]) -> Callable[[str, bool], None]:
-    _acts[func.__name__.removeprefix("_")] = func
+def _action(func: Callable[[bool], None]) -> Callable[[bool], None]:
+    _acts[func.__name__] = func
     return func
 
 
 @_action
-def _template():
+def template(force: bool):
+    try:
+        template = Path(__file__).parent.joinpath("templates", ".sroka_config").resolve()
+        shutil.copytree(
+            str(template),
+            str(Path(os.getcwd()).joinpath(".sroka_config").resolve()),
+            dirs_exist_ok=force
+        )
+    except FileExistsError:
+        print("I couldn't create the folder, because .sroka_config already exists in this directory.",
+              "Override this using the --force argument")
+    except shutil.Error as err:
+        for src, _, e in err.args[0]:
+            print(
+                f"When copying {Path(src).relative_to(template.parent)} I encountered an exception:",
+                e,
+                sep="\n"
+            )
+    else:
+        print(f"I created the config folder in {os.getcwd()}")
+
+
+@_action
+def get(force: bool):
     pass
 
 
 @_action
-def _get():
-    pass
-
-
-@_action
-def _set():
+def set(force: bool):
     pass
 
 
@@ -34,12 +55,22 @@ _parser = _ArgumentParser(
 )
 
 _parser.add_argument(
-    "--force", "f",
+    "action",
+    choices=_acts.keys()
+)
+
+_parser.add_argument(
+    "--force", "-f",
     action="store_true"
 )
 
 
 def perform(arg_list: list[str]) -> None:
     args = _parser.parse_args(arg_list)
-    print(args)
-    # _acts.get()
+
+    try:
+        action = _acts[args.action]
+    except KeyError:
+        _parser.print_help()
+    else:
+        action(args.force)

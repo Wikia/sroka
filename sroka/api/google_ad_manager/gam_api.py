@@ -129,7 +129,7 @@ def get_data_from_admanager(query, dimensions, columns, start_date, end_date, cu
         if 'AuthenticationError.NETWORK_NOT_FOUND' in str(e):
             print('Provided network code was not found.')
         elif 'AuthenticationError.NETWORK_CODE_REQUIRED' in str(e):
-            print('Default value of network code is missing from ', config.default_config_filepath)
+            print('Default value of network code is missing from the config file')
         else:
             print('Failed to generate report. Error was: {}'.format(e))
         return
@@ -202,7 +202,7 @@ def get_users_from_admanager(query, dimensions, network_code=None):
         if 'AuthenticationError.NETWORK_NOT_FOUND' in str(e):
             print('Provided network code was not found.')
         elif 'AuthenticationError.NETWORK_CODE_REQUIRED' in str(e):
-            print('Default value of network code is missing from ', config.default_config_filepath)
+            print('Default value of network code is missing from the config file')
         else:
             print('Failed to generate user list. Error was: {}'.format(e))
         return
@@ -258,7 +258,7 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
         if 'AuthenticationError.NETWORK_NOT_FOUND' in str(e):
             print('Provided network code was not found.')
         elif 'AuthenticationError.NETWORK_CODE_REQUIRED' in str(e):
-            print('Default value of network code is missing from ', config.default_config_filepath)
+            print('Default value of network code is missing from the config file')
         else:
             print('Failed to generate company list. Error was: {}'.format(e))
         return

@@ -6,7 +6,7 @@ import stat
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-default_config_filepath = os.path.expanduser('~/.sroka_config/')
+from .nest import NEST
 
 
 def set_google_credentials(authorized_user_file,
@@ -32,7 +32,7 @@ def set_google_credentials(authorized_user_file,
 def get_value(group, key):
     """Function that gets configuration from config file."""
 
-    config_path = default_config_filepath + "config.ini"
+    config_path = NEST("config.ini")
     if 'CONFIG_FILE_PATH' in os.environ:
         config_path = os.environ['CONFIG_FILE_PATH']
 
@@ -58,14 +58,14 @@ def has_value(group, key):
 def get_file_path(group):
     """Function that gets configuration files for APIs."""
     if group == 'google_ad_manager':
-        return os.environ.get('CONFIG_AD_MANAGER', os.path.join(default_config_filepath, 'ad_manager.json'))
+        return os.environ.get('CONFIG_AD_MANAGER', NEST('ad_manager.json'))
     if group == 'google_analytics':
-        return os.environ.get('CONFIG_GOOGLE_ANALYTICS', os.path.join(default_config_filepath, 'client_secrets.json'))
+        return os.environ.get('CONFIG_GOOGLE_ANALYTICS', NEST('client_secrets.json'))
     if group == 'google_drive':
-        return os.environ.get('CONFIG_GOOGLE_DRIVE', os.path.join(default_config_filepath, 'credentials.json'))
+        return os.environ.get('CONFIG_GOOGLE_DRIVE', NEST('credentials.json'))
     if group == 'google_bigquery':
         return os.environ.get('GOOGLE_APPLICATION_CREDENTIALS',
-                              os.path.join(default_config_filepath, 'bigquery_credentials.json'))
+                              NEST('bigquery_credentials.json'))
 
 
 def setup_env_variables(filepath=None):
