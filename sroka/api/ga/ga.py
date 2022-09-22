@@ -1,13 +1,13 @@
 import os
+from contextlib import contextmanager
+from typing import Dict
 
 import pandas as pd
-from typing import Dict
 from google.auth.exceptions import RefreshError
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 
 import sroka.config.config as config
-from contextlib import contextmanager
 
 
 class GADataNotYetAvailable(Exception):
@@ -165,7 +165,7 @@ def ga_request(input_dict, print_sample_size=False, sampling_level='HIGHER_PRECI
             __print_sample_size(print_sample_size, results)
 
             return df
-    except:
+    except Exception:
         # the error message is displayed by context manager
         # this except clause is here just to keep the old API behavior (an empty DataFrame in case of an error)
         return pd.DataFrame([])
