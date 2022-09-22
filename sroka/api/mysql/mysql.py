@@ -11,13 +11,30 @@ from sroka.api.mysql.mysql_helpers import validate_options, get_options_from_con
 @retry(stop_max_attempt_number=1,
        wait_exponential_multiplier=1 * 2,
        wait_exponential_max=1 * 2 * 2)
-def query_mysql(query: str, filename=None):
+def query_mysql(query: str, filename=None,
+                host=None, port=None,
+                unix_socket=None, user=None,
+                password=None, database=None
+                ):
     try:
         options = get_options_from_config()
 
     except NoSectionError:
         print('Missing MySQL section in configuration')
         return pd.DataFrame([])
+
+    if host:
+        options['host'] = host
+    if port:
+        options['port'] = port
+    if unix_socket:
+        options['unix_socket'] = unix_socket
+    if user:
+        options['user'] = user
+    if password:
+        options['password'] = password
+    if database:
+        options['database'] = database
 
     if not validate_options(options):
         return pd.DataFrame([])
