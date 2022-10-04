@@ -12,3 +12,4 @@ sroka.egg-info/
 **.csv
 config.ini
 sroka_test_file.py
+build
