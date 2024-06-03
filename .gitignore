@@ -12,4 +12,5 @@ sroka.egg-info/
 **.csv
 config.ini
 sroka_test_file.py
+environments.txt
 build
