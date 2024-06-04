@@ -31,7 +31,7 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
             print('File not found on s3')
             return pd.DataFrame([])
         try:
-            df_list.append(pd.read_csv(data, error_bad_lines=False, warn_bad_lines=False, sep=sep,
+            df_list.append(pd.read_csv(data, on_bad_lines='skip', sep=sep,
                                        header=header_setting))
         except UnicodeDecodeError:
             df_list.append(pq.read_pandas(data).to_pandas())
@@ -47,7 +47,7 @@ def _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files=Tr
                 if 'SUCCESS' not in file.key:
                     tmp = StringIO(str(file.get()['Body'].read(), 'utf-8'))
                     try:
-                        data = pd.read_csv(tmp, error_bad_lines=False, warn_bad_lines=False, sep=sep,
+                        data = pd.read_csv(tmp, on_bad_lines='skip', sep=sep,
                                            header=header_setting)
                         df_list.append(data)
                     except EmptyDataError:
