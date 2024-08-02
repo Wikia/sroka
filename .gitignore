@@ -1,0 +1,16 @@
+.DS_Store
+.gitignore.swp
+.ipynb_checkpoints
+__pycache__
+temporary
+.idea
+venv/
+env/
+datasets/
+dist/
+sroka.egg-info/
+**.csv
+config.ini
+sroka_test_file.py
+environments.txt
+build

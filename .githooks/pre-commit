@@ -1,0 +1,6 @@
+set -e
+
+# Run flake8
+flake8 .
+
+python3 ./.githooks/isort_hooks.py
