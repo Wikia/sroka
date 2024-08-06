@@ -14,6 +14,7 @@ Package providing simple Python access to data in:
 * AWS s3
 * MySQL
 * neo4j
+* SPARQL
 
 Sroka library was checked to work for Python **>=3.8, <=3.11**.
 

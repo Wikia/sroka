@@ -1,11 +1,10 @@
-import os
 import mysql.connector
 import pandas as pd
 from configparser import NoSectionError
-from pathlib import Path
 from mysql.connector.errors import DatabaseError, OperationalError, InternalError
 from retrying import retry
 from sroka.api.mysql.mysql_helpers import validate_options, get_options_from_config
+from sroka.api.helpers import save_to_file
 
 
 @retry(stop_max_attempt_number=1,
@@ -72,21 +71,5 @@ def query_mysql(query: str, filename=None,
     # Otherwise, store it in a file.
     if not filename:
         return df
-
-    # Store the path in a cross-platform pathlib object to ensure compatibility
-    # with DOS & UNIX-based operating systems.
-    path = Path(filename)
-
-    # Get the parent directory of the given path, if it exists.
-    directory_path = str(path.parent.resolve())
-
-    # If the given path points to a folder, attempt to create it. If it already
-    # exists, the `exist_ok` option ensures that no exception will be thrown.
-    if directory_path != "":
-        os.makedirs(directory_path, exist_ok=True)
-
-    # Export the data in a CSV file.
-    try:
-        df.to_csv(filename)
-    except OSError as e:
-        print('Unable to write on filesystem: {}'.format(e))
+    else:
+        save_to_file(df, filename)
