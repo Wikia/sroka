@@ -15,7 +15,7 @@ def query_sparql(query, endpoint_url=None, filename=None):
     if endpoint_url:
         options['endpoint_url'] = endpoint_url
 
-    sparql = SPARQLWrapper(endpoint_url)
+    sparql = SPARQLWrapper(options["endpoint_url"])
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.queryAndConvert()['results']['bindings']
