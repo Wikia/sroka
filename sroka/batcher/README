@@ -1,0 +1,12 @@
+# Batcher lib
+
+Made to facilitate API calls by caching, batching and (possibly) executing them in the background.
+
+This is a WIP, for now I just migrated it from the KeeVee repo.
+
+- `AbstractBatch` subclasses should be used via class methods to retrieve certain objects.
+- `AbstractBatch.request()` adds an object request to a non-full batch and returns the receipt of that request.
+- `AbstractBatch().get_value()` retrieves an object from an executed batch based on the arguments stored in the receipt (ex: Line Item ID)
+- Instead of `AbstractBatch().get_value()`, `Receipt().get()` should be used. This will automatically run the batch and wait for its results. After that, the result will be returned.
+- `AbstractBatch` also saves the object-to-batch associations, so when that object is requested again, it’s returned from the cache.
+The cache could be updated manually when other batches request the same object
