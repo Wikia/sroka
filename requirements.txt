@@ -8,7 +8,7 @@ google-cloud-bigquery>=1.24.0
 googleads>=42.0.0
 isort==4.3.9
 lxml>=4.6.5
-mysql-connector-python==8.0.17
+mysql-connector-python==9.1.0
 numpy>=1.16.2
 pandas>=0.24.0
 pyarrow>=0.11.1
