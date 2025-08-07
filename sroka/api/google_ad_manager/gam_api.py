@@ -266,3 +266,98 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
     except errors.AdManagerReportError as e:
         print('Failed to generate company list. Error was: {}'.format(e))
         return
+
+
+def get_inventory(
+    inventory_type: str,
+    filter_text: str = None,
+    network_code: str = None,
+) -> pd.DataFrame:
+    """
+    Fetches a complete list of a specified inventory type from Google Ad Manager.
+
+    This generic function uses the appropriate service (e.g., InventoryService,
+    LineItemService) based on the provided inventory_type. It handles pagination
+    automatically to retrieve all entities matching the query.
+
+    Args:
+        inventory_type: The type of inventory to fetch. Must be a key in the
+                        INVENTORY_SERVICE_MAP (e.g., 'AdUnit', 'LineItem').
+        filter_text: An optional PQL-like 'WHERE' clause to filter the results.
+                     For example: "WHERE status = 'ACTIVE'". Do not include
+                     'ORDER BY' or 'LIMIT' clauses.
+        network_code: The GAM network code to use.
+    Returns:
+        A pandas DataFrame with all the items in the specified inventory type.
+
+    Raises:
+        ValueError: If the provided inventory_type is not supported.
+        Exception: Propagates exceptions from the GAM API client.
+    """
+
+    gam_api_page_limit = 500
+    inventory_service_map = {
+        "AdUnit": ("InventoryService", "getAdUnitsByStatement"),
+    }
+
+    if inventory_type not in inventory_service_map:
+        raise ValueError(
+            f"Unsupported inventory_type: '{inventory_type}'. "
+            f"Supported types are: {list(inventory_service_map.keys())}"
+        )
+
+    service_name, method_name = inventory_service_map[inventory_type]
+    print(f"Initializing {service_name} to fetch '{inventory_type}' entities...")
+
+    try:
+        gam_client = init_gam_connection(network_code)
+        fetch_method = getattr(gam_client, method_name)
+    except Exception as e:
+        print(
+            f"Failed to initialize service '{service_name}' or method '{method_name}'."
+        )
+        raise e
+
+    query_parts = []
+    if filter_text:
+        query_parts.append(filter_text)
+
+    # Always order by ID for stable and reliable pagination
+    query_parts.append("ORDER BY id ASC")
+
+    full_query = " ".join(query_parts)
+    statement = ad_manager.FilterStatement(full_query)
+
+    all_items = []
+    page_number = 1
+
+    # Loop through pages of results until all items have been fetched
+    while True:
+        print(
+            f"Fetching page {page_number} (limit: {gam_api_page_limit}, offset: {statement.offset or 0})..."
+        )
+
+        response = fetch_method(statement.ToStatement())
+
+        if response and "results" in response and response["results"]:
+            num_results = len(response["results"])
+            print(f"-> Found {num_results} items on this page.")
+
+            all_items.extend(response["results"])
+
+            # Move the offset to the next page
+            statement.offset += gam_api_page_limit
+            page_number += 1
+
+            # If the number of results is less than the page limit, we're on the last page
+            if num_results < gam_api_page_limit:
+                break
+        else:
+            # No more results found, so we're done
+            print("No more items found.")
+            break
+
+    print(
+        f"Successfully fetched a total of {len(all_items)} '{inventory_type}' items.\n"
+    )
+    return pd.DataFrame(all_items)
