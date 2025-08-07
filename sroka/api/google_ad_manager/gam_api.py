@@ -283,10 +283,8 @@ def serialize_gam_object(obj: object, columns_to_keep: list[str] = None) -> dict
     Returns:
         A flattened dictionary representation of the object.
     """
-    # Use zeep's helper to convert the complex object to a standard Python dict
     base_dict = helpers.serialize_object(obj, dict)
 
-    # Inner function to recursively flatten the dictionary
     def flatten_dict(d: dict, parent_key: str = '', sep: str = '_') -> dict:
         items = []
         for k, v in d.items():
@@ -294,8 +292,6 @@ def serialize_gam_object(obj: object, columns_to_keep: list[str] = None) -> dict
             if isinstance(v, dict):
                 items.extend(flatten_dict(v, new_key, sep=sep).items())
             elif isinstance(v, list):
-                # If a list contains dicts, serialize them to a JSON string.
-                # Otherwise, join them as a simple comma-separated string.
                 if v and all(isinstance(i, dict) for i in v):
                     items.append((new_key, json.dumps(v)))
                 else:
@@ -306,7 +302,6 @@ def serialize_gam_object(obj: object, columns_to_keep: list[str] = None) -> dict
 
     flattened_data = flatten_dict(base_dict)
 
-    # If a list of columns is specified, filter the flattened dictionary
     if columns_to_keep:
         return {key: flattened_data.get(key) for key in columns_to_keep}
 
@@ -380,7 +375,6 @@ def get_inventory_from_admanager(
     all_items = []
     page_number = 1
 
-    # Loop through pages of results until all items have been fetched
     while True:
         print(
             f"Fetching page {page_number} (limit: {gam_api_page_limit}, offset: {statement.offset or 0})..."
@@ -394,15 +388,12 @@ def get_inventory_from_admanager(
 
             all_items.extend(response["results"])
 
-            # Move the offset to the next page
             statement.offset += gam_api_page_limit
             page_number += 1
 
-            # If the number of results is less than the page limit, we're on the last page
             if num_results < gam_api_page_limit:
                 break
         else:
-            # No more results found, so we're done
             print("No more items found.")
             break
 

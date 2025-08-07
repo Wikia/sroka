@@ -1,3 +1,5 @@
+from sroka_internal_tests.google_ad_manager_tests import columns_to_keep
+
 # GAM API
 
 ## Methods
@@ -112,7 +114,7 @@ data = get_companies_from_admanager(query, dimensions, network_code=1234)
 
 ```
 
-### `get_inventory_from_admanager(inventory_type, filter_text, network_code)`
+### `get_inventory_from_admanager(inventory_type, query_filter, columns_to_keep, network_code)`
 
 #### Arguments
 * inventory_type: The type of inventory to fetch. Must be a key in the 
@@ -136,6 +138,8 @@ from sroka.api.google_ad_manager.gam_api import get_inventory_from_admanager
 # Data from GAM - company list
 inventory_type = "AdUnit"
 filter_text = "WHERE status = 'ACTIVE'"
+columns_to_keep = ['id', 'parentId', 'hasChildren', 'adUnitDetails', 'adUnitCode', 'targetWindow', 'targetPlatform', 'status'],
+
 
 data = get_inventory_from_admanager(inventory_type, filter_text, network_code=1234)
 
