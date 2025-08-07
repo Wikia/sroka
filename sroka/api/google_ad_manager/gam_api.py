@@ -268,7 +268,7 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
         return
 
 
-def get_inventory(
+def get_inventory_from_admanager(
     inventory_type: str,
     filter_text: str = None,
     network_code: str = None,
@@ -282,7 +282,7 @@ def get_inventory(
 
     Args:
         inventory_type: The type of inventory to fetch. Must be a key in the
-                        INVENTORY_SERVICE_MAP (e.g., 'AdUnit', 'LineItem').
+                        inventory_service_map (e.g., 'InventoryService').
         filter_text: An optional PQL-like 'WHERE' clause to filter the results.
                      For example: "WHERE status = 'ACTIVE'". Do not include
                      'ORDER BY' or 'LIMIT' clauses.

@@ -111,3 +111,30 @@ dimensions = ['id', 'name']
 data = get_companies_from_admanager(query, dimensions, network_code=1234)
 
 ```
+
+### `get_inventory_from_admanager(inventory_type, filter_text, network_code)`
+
+#### Arguments
+* inventory_type: The type of inventory to fetch. Must be a key in the 
+                inventory_service_map (e.g., 'InventoryService').
+* filter_text: An optional PQL-like 'WHERE' clause to filter the results.
+             For example: "WHERE status = 'ACTIVE'". Do not include
+             'ORDER BY' or 'LIMIT' clauses.
+* network_code: The GAM network code to use.
+
+#### Returns
+
+* pandas.DataFrame
+
+## Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_api import get_inventory_from_admanager
+
+# Data from GAM - company list
+inventory_type = "InventoryService"
+filter_text = "WHERE status = 'ACTIVE'"
+
+data = get_inventory_from_admanager(inventory_type, filter_text, network_code=1234)
+
+```
