@@ -1,3 +1,5 @@
+from sroka_internal_tests.google_ad_manager_tests import columns_to_keep
+
 # GAM API
 
 ## Methods
@@ -109,5 +111,36 @@ query = "WHERE type IN ('Advertiser')"
 dimensions = ['id', 'name']
 
 data = get_companies_from_admanager(query, dimensions, network_code=1234)
+
+```
+
+### `get_inventory_from_admanager(inventory_type, query_filter, columns_to_keep, network_code)`
+
+#### Arguments
+* inventory_type: The type of inventory to fetch. Must be a key in the 
+                inventory_service_map (e.g., 'AdUnit').
+* query_filter: An optional PQL-like 'WHERE' clause to filter the results.
+             For example: "WHERE status = 'ACTIVE'". Do not include
+             'ORDER BY' or 'LIMIT' clauses.
+* columns_to_keep: An optional list of column names to keep in the output DataFrame.
+            If None, provides all the columns.
+* network_code: The GAM network code to use.
+
+#### Returns
+
+* pandas.DataFrame
+
+## Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_api import get_inventory_from_admanager
+
+# Data from GAM - company list
+inventory_type = "AdUnit"
+filter_text = "WHERE status = 'ACTIVE'"
+columns_to_keep = ['id', 'parentId', 'hasChildren', 'adUnitDetails', 'adUnitCode', 'targetWindow', 'targetPlatform', 'status'],
+
+
+data = get_inventory_from_admanager(inventory_type, filter_text, network_code=1234)
 
 ```

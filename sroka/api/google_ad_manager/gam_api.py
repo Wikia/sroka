@@ -1,9 +1,11 @@
 import gzip
+import json
 import tempfile
 from configparser import NoOptionError
 
 import pandas as pd
 from googleads import ad_manager, errors
+from zeep import helpers
 
 import sroka.config.config as config
 
@@ -266,3 +268,140 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
     except errors.AdManagerReportError as e:
         print('Failed to generate company list. Error was: {}'.format(e))
         return
+
+
+def serialize_gam_object(obj: object, columns_to_keep: list[str] = None) -> dict:
+    """
+    Serializes a zeep object from the GAM API into a flattened dictionary,
+    handling nested objects and lists.
+
+    Args:
+        obj: The zeep object to serialize.
+        columns_to_keep: An optional list of column names to keep. If provided,
+                         only these columns will be in the output dict.
+
+    Returns:
+        A flattened dictionary representation of the object.
+    """
+    base_dict = helpers.serialize_object(obj, dict)
+
+    def flatten_dict(d: dict, parent_key: str = '', sep: str = '_') -> dict:
+        items = []
+        for k, v in d.items():
+            new_key = parent_key + sep + k if parent_key else k
+            if isinstance(v, dict):
+                items.extend(flatten_dict(v, new_key, sep=sep).items())
+            elif isinstance(v, list):
+                if v and all(isinstance(i, dict) for i in v):
+                    items.append((new_key, json.dumps(v)))
+                else:
+                    items.append((new_key, ','.join(map(str, v))))
+            else:
+                items.append((new_key, v))
+        return dict(items)
+
+    flattened_data = flatten_dict(base_dict)
+
+    if columns_to_keep:
+        return {key: flattened_data.get(key) for key in columns_to_keep}
+
+    return flattened_data
+
+
+def get_inventory_from_admanager(
+    inventory_type: str,
+    query_filter: str = None,
+    columns_to_keep: list[str] = None,
+    network_code: str = None,
+) -> pd.DataFrame:
+    """
+    Fetches a complete list of a specified inventory type from Google Ad Manager.
+
+    This generic function uses the appropriate service (e.g., InventoryService,
+    LineItemService) based on the provided inventory_type. It handles pagination
+    automatically to retrieve all entities matching the query.
+
+    Args:
+        inventory_type: The type of inventory to fetch. Must be a key in the
+                        inventory_service_map (e.g., 'AdUnit').
+        query_filter: An optional PQL-like 'WHERE' clause to filter the results.
+                     For example: "WHERE status = 'ACTIVE'". Do not include
+                     'ORDER BY' or 'LIMIT' clauses.
+        columns_to_keep: An optional list of column names to keep in the output DataFrame.
+                    If None, provides all the columns.
+        network_code: The GAM network code to use.
+    Returns:
+        A pandas DataFrame with all the items in the specified inventory type.
+
+    Raises:
+        ValueError: If the provided inventory_type is not supported.
+        Exception: Propagates exceptions from the GAM API client.
+    """
+
+    gam_api_page_limit = 500
+    inventory_service_map = {
+        "AdUnit": ("InventoryService", "getAdUnitsByStatement"),
+    }
+
+    if inventory_type not in inventory_service_map:
+        raise ValueError(
+            f"Unsupported inventory_type: '{inventory_type}'. "
+            f"Supported types are: {list(inventory_service_map.keys())}"
+        )
+
+    service_name, method_name = inventory_service_map[inventory_type]
+    print(f"Initializing {service_name} to fetch '{inventory_type}' entities...")
+
+    try:
+        gam_client = init_gam_connection(network_code)
+        service = gam_client.GetService(service_name)
+        fetch_method = getattr(service, method_name)
+    except Exception as e:
+        print(
+            f"Failed to initialize service '{service_name}' or method '{method_name}'."
+        )
+        raise e
+
+    query_parts = []
+    if query_filter:
+        query_parts.append(query_filter)
+
+    # Always order by ID for stable and reliable pagination
+    query_parts.append("ORDER BY id ASC")
+
+    full_query = " ".join(query_parts)
+    statement = ad_manager.FilterStatement(full_query)
+
+    all_items = []
+    page_number = 1
+
+    while True:
+        print(
+            f"Fetching page {page_number} (limit: {gam_api_page_limit}, offset: {statement.offset or 0})..."
+        )
+
+        response = fetch_method(statement.ToStatement())
+
+        if response and "results" in response and response["results"]:
+            num_results = len(response["results"])
+            print(f"-> Found {num_results} items on this page.")
+
+            all_items.extend(response["results"])
+
+            statement.offset += gam_api_page_limit
+            page_number += 1
+
+            if num_results < gam_api_page_limit:
+                break
+        else:
+            print("No more items found.")
+            break
+
+    print(
+        f"Successfully fetched a total of {len(all_items)} '{inventory_type}' items.\n"
+    )
+    all_items_as_dicts = [
+        serialize_gam_object(item, columns_to_keep) for item in all_items
+    ]
+
+    return pd.DataFrame(all_items_as_dicts)
