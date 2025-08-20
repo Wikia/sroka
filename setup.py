@@ -11,7 +11,7 @@ setuptools.setup(
     version="0.0.9",
     author="Ad Engineering FANDOM",
     author_email="murbanek@fandom.com",
-    description="Package for access GA, GAM, MOAT, Qubole, Athena, S3, Rubicon APIs, BigQuery, MySQL",
+    description="Package for access GA, GAM, MOAT, Qubole, Athena, S3, Rubicon APIs, BigQuery, MySQL, SPARQL",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Wikia/sroka",
