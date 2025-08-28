@@ -308,22 +308,21 @@ def serialize_gam_object(obj: object, columns_to_keep: list[str] = None) -> dict
     return flattened_data
 
 
-def get_inventory_from_admanager(
-    inventory_type: str,
+def get_service_data_from_admanager(
+    service: str,
     query_filter: str = None,
     columns_to_keep: list[str] = None,
     network_code: str = None,
 ) -> pd.DataFrame:
     """
-    Fetches a complete list of a specified inventory type from Google Ad Manager.
+    Fetches a complete list of a specified service data type from Google Ad Manager.
 
     This generic function uses the appropriate service (e.g., InventoryService,
-    LineItemService) based on the provided inventory_type. It handles pagination
+    LineItemService). It handles pagination
     automatically to retrieve all entities matching the query.
 
     Args:
-        inventory_type: The type of inventory to fetch. Must be a key in the
-                        inventory_service_map (e.g., 'AdUnit').
+        service: The type of service data to fetch. Must be a key in the service_map (e.g., 'AdUnit').
         query_filter: An optional PQL-like 'WHERE' clause to filter the results.
                      For example: "WHERE status = 'ACTIVE'". Do not include
                      'ORDER BY' or 'LIMIT' clauses.
@@ -331,26 +330,32 @@ def get_inventory_from_admanager(
                     If None, provides all the columns.
         network_code: The GAM network code to use.
     Returns:
-        A pandas DataFrame with all the items in the specified inventory type.
+        A pandas DataFrame with all the items in the specified service data.
 
     Raises:
-        ValueError: If the provided inventory_type is not supported.
+        ValueError: If the provided service is not supported.
         Exception: Propagates exceptions from the GAM API client.
     """
 
     gam_api_page_limit = 500
-    inventory_service_map = {
+    service_map = {
         "AdUnit": ("InventoryService", "getAdUnitsByStatement"),
+        "LineItem": ("LineItemService", "getLineItemsByStatement"),
+        "Order": ("OrderService", "getOrdersByStatement"),
+        "Creative": ("CreativeService", "getCreativesByStatement"),
+        "Company": ("CompanyService", "getCompaniesByStatement"),
+        "Label": ("LabelService", "getLabelsByStatement"),
+        "CustomField": ("CustomFieldService", "getCustomFieldsByStatement"),
     }
 
-    if inventory_type not in inventory_service_map:
+    if service not in service_map:
         raise ValueError(
-            f"Unsupported inventory_type: '{inventory_type}'. "
-            f"Supported types are: {list(inventory_service_map.keys())}"
+            f"Unsupported inventory_type: '{service}'. "
+            f"Supported types are: {list(service_map.keys())}"
         )
 
-    service_name, method_name = inventory_service_map[inventory_type]
-    print(f"Initializing {service_name} to fetch '{inventory_type}' entities...")
+    service_name, method_name = service_map[service]
+    print(f"Initializing {service_name} to fetch '{service}' entities...")
 
     try:
         gam_client = init_gam_connection(network_code)
@@ -398,7 +403,7 @@ def get_inventory_from_admanager(
             break
 
     print(
-        f"Successfully fetched a total of {len(all_items)} '{inventory_type}' items.\n"
+        f"Successfully fetched a total of {len(all_items)} '{service}' items.\n"
     )
     all_items_as_dicts = [
         serialize_gam_object(item, columns_to_keep) for item in all_items
