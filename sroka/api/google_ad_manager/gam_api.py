@@ -194,7 +194,8 @@ def get_users_from_admanager(query, dimensions, network_code=None):
                             print('Failed to generate user list. Incorrect dimension: {}'.format(e))
                             return
 
-                    user_df = user_df.append(dimensions_df, sort=False)
+                    user_df = pd.concat([user_df, dimensions_df], sort=False,
+                                        ignore_index=True)
                 statement.offset += statement.limit
             else:
                 break
@@ -250,7 +251,8 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
                             print('Failed to generate company list. Incorrect dimension: {}'.format(e))
                             return
 
-                    company_df = company_df.append(dimensions_df, sort=False)
+                    company_df = pd.concat([company_df, dimensions_df], sort=False,
+                                        ignore_index=True)
                 statement.offset += statement.limit
             else:
                 break
