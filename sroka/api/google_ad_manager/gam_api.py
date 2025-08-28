@@ -345,6 +345,7 @@ def get_service_data_from_admanager(
         "Creative": ("CreativeService", "getCreativesByStatement"),
         "Company": ("CompanyService", "getCompaniesByStatement"),
         "Label": ("LabelService", "getLabelsByStatement"),
+        "CustomField": ("CustomFieldService", "getCustomFieldsByStatement"),
     }
 
     if service not in service_map:
