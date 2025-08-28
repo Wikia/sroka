@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="sroka",
-    version="0.0.9",
+    version="0.0.10",
     author="Ad Engineering FANDOM",
     author_email="murbanek@fandom.com",
     description="Package for access GA, GAM, MOAT, Qubole, Athena, S3, Rubicon APIs, BigQuery, MySQL",
