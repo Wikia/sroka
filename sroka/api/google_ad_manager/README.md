@@ -114,11 +114,11 @@ data = get_companies_from_admanager(query, dimensions, network_code=1234)
 
 ```
 
-### `get_inventory_from_admanager(inventory_type, query_filter, columns_to_keep, network_code)`
+### `get_service_data_from_admanager(service, query_filter, columns_to_keep, network_code)`
 
 #### Arguments
-* inventory_type: The type of inventory to fetch. Must be a key in the 
-                inventory_service_map (e.g., 'AdUnit').
+* service: The type of service data to fetch. Must be a key in the 
+                service_map (e.g., 'AdUnit').
 * query_filter: An optional PQL-like 'WHERE' clause to filter the results.
              For example: "WHERE status = 'ACTIVE'". Do not include
              'ORDER BY' or 'LIMIT' clauses.
@@ -133,14 +133,14 @@ data = get_companies_from_admanager(query, dimensions, network_code=1234)
 ## Example usage
 
 ```python
-from sroka.api.google_ad_manager.gam_api import get_inventory_from_admanager
+from sroka.api.google_ad_manager.gam_api import get_service_data_from_admanager
 
 # Data from GAM - company list
-inventory_type = "AdUnit"
+service = "AdUnit"
 filter_text = "WHERE status = 'ACTIVE'"
 columns_to_keep = ['id', 'parentId', 'hasChildren', 'adUnitDetails', 'adUnitCode', 'targetWindow', 'targetPlatform', 'status'],
 
 
-data = get_inventory_from_admanager(inventory_type, filter_text, network_code=1234)
+data = get_service_data_from_admanager(service, filter_text, network_code=1234)
 
 ```
