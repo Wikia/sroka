@@ -346,6 +346,8 @@ def get_service_data_from_admanager(
         "Company": ("CompanyService", "getCompaniesByStatement"),
         "Label": ("LabelService", "getLabelsByStatement"),
         "CustomField": ("CustomFieldService", "getCustomFieldsByStatement"),
+        "CustomTargetingKeys": ("CustomTargetingService", "getCustomTargetingKeysByStatement"),
+        "CustomTargetingValues": ("CustomTargetingService", "getCustomTargetingValuesByStatement")
     }
 
     if service not in service_map:
@@ -401,6 +403,7 @@ def get_service_data_from_admanager(
         else:
             print("No more items found.")
             break
+
 
     print(
         f"Successfully fetched a total of {len(all_items)} '{service}' items.\n"
