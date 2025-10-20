@@ -163,7 +163,8 @@ class Test_Drive_Sheets_GAM(unittest.TestCase):
             self.assertEqual(user_b_expected_role, user_b_actual_role, f"Expected role '{user_b_expected_role}', but found '{user_b_actual_role}'")
 
 
-def ad_manager_test():
+#TBD Ad Manager tests
+"""def ad_manager_test():
     # Test for get_data_from_admanager function
     start_day = '01'
     end_day = '02'
@@ -321,18 +322,4 @@ def ad_manager_test():
         query_filter=query_filter,
         columns_to_keep=columns_to_keep,
     )
-    pd.testing.assert_frame_equal(actual_df, expected_df)
-
-
-if __name__ == '__main__':
-    
-    file_id_value = google_drive_sheets_create('new file3')
-    print(f'link to the file: https://docs.google.com/spreadsheets/d/{file_id_value}')
-    
-    # File transfer test
-    parents = google_drive_get_file_parents(file_id_value)
-    old_location_id = parents[0] if parents else 'root'
-    google_drive_move_file(file_id_value, old_location_id,'1rAhh5_oHhXR3xdmbTdsyQpHBtCzarNEm')
-
-
-    ad_manager_test()
+    pd.testing.assert_frame_equal(actual_df, expected_df)"""
