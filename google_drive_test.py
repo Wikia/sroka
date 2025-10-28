@@ -18,8 +18,8 @@ import unittest
 
 class Test_Drive_Sheets_GAM(unittest.TestCase):
 
-    TEST_FILE_ID = "..."     #[only for Subtest 6] Replace with the actual ID of TEST_FILE
-    TEST_FOLDER_ID = "..."   #[only for Subtest 6] Replace with the actual ID of TEST_PARENT_FOLDER
+    TEST_FILE_ID = "..."     #[only for Subtests 8a/8b] Replace with the actual ID of TEST_FILE
+    TEST_FOLDER_ID = "..."   #[only for Subtests 8a/8b] Replace with the actual ID of TEST_PARENT_FOLDER
     TEST_NEW_FOLDER = "..."  #Replacewith the actual ID of TEST_MOVE_FOLDER - the folder where you want to transfer your file
     YOUR_EMAIL = "..." #Replace with your actual e-mail
     OTHER_EMAIL_A = "..." #Replace with e-mail which will receive new permission to a file
