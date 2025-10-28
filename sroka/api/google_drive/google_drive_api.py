@@ -16,7 +16,7 @@ def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_colu
 
     Args:
         sheetname_id (str): The ID of the Spreadsheet.
-        sheet_range (str): The A1 notation range of the data to retrieve (e.g., 'Sheet1!A21:D37').
+        sheet_range (str): The A1 notation range of the data to retrieve (e.g., 'Sheet1!A1:D7').
         first_row_columns (bool): If True, treats the first row of the retrieved data
                                             as the column headers for the resulting DataFrame and removes
                                             that row from the data. 
