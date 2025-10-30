@@ -26,7 +26,7 @@ class Test_Drive_Sheets_GAM(unittest.TestCase):
     OTHER_EMAIL_B = "..." #Replace with e-mail where you want to transfer ownership - YOU WILL LOSE OWNER ACCESS TO THE FILE!
 
     def test_google_sheets(self):
-        #Class for tasting Google Sheets & Google Drive functionality
+        #Function for tasting Google Sheets & Google Drive functionality
 
         #Subtest 1: File creation
         with self.subTest(case='sheets_create'):
@@ -106,7 +106,7 @@ class Test_Drive_Sheets_GAM(unittest.TestCase):
             old_folder_list = google_drive_get_file_parents(temp_id_value)
             old_folder_id = old_folder_list[0]
 
-            google_drive_move_file(temp_id_value, , self.TEST_NEW_FOLDER)
+            google_drive_move_file(temp_id_value, old_folder_id, self.TEST_NEW_FOLDER)
 
             folder_id_out = google_drive_get_file_parents(temp_id_value)
             self.assertEqual(folder_id_out, [self.TEST_NEW_FOLDER])
@@ -161,97 +161,69 @@ class Test_Drive_Sheets_GAM(unittest.TestCase):
             user_b_expected_role = 'owner'
             user_b_actual_role = file_permissions_out[self.OTHER_EMAIL_B]
             self.assertEqual(user_b_expected_role, user_b_actual_role, f"Expected role '{user_b_expected_role}', but found '{user_b_actual_role}'")
+    
+    
+    def test_google_admanager(self):
+        #Function for tasting Google Ad Manager functionality
+
+        #Subtest 1: Pulling data from Ad Manager
+        with self.subTest(case="pulling_gam_data"):
+            df_gam_in = pd.DataFrame([
+            ['2024-03-01', 140913485],
+            ['2024-03-02', 162338202]], columns=['Dimension.DATE',
+                    'Column.TOTAL_ACTIVE_VIEW_MEASURABLE_IMPRESSIONS'])
+            
+            query = ""
+            dimensions = ['DATE']
+            columns = ['TOTAL_ACTIVE_VIEW_MEASURABLE_IMPRESSIONS']
+            start_date = {'year': '2024',
+                'month': '03',
+                'day': '01'}
+            end_date = {'year': '2024',
+                'month': '03',
+                'day': '02'}
+
+            df_gam_out = get_data_from_admanager(query, dimensions, columns,
+                                    start_date, end_date)
+            self.assertTrue((df_gam_out == df_gam_in).all().all())
+
+        #Subtest 2: Getting data for a certain service
+        with self.subTest(case="get_service_data"):
+            service_2 = "AdUnit"
+            query_filter_2 = "WHERE status = 'ACTIVE' AND id IN ('22067796444', '22933978589')"
+            columns_to_keep_2 = [
+                "id",
+                "parentId",
+                "hasChildren",
+                "parentPath",
+                "adUnitCode",
+                "targetWindow",
+                "status"]
+            expected_data_2 = [
+                [
+                    "22067796444",
+                    "22067796441",
+                    False,
+                    '[{"id": "81570852", "name": "5441", "adUnitCode": "5441"}, {"id": "21787210647", "name": "vm1b.mr", "adUnitCode": "vm1b.mr"}, {"id": "21786989669", "name": "top_boxad", "adUnitCode": "top_boxad"}, {"id": "21788841311", "name": "smartphone", "adUnitCode": "smartphone"}, {"id": "22067796441", "name": "ns-curated", "adUnitCode": "ns-curated"}]',
+                    "_fandom-all",
+                    "BLANK",
+                    "ACTIVE"],
+                [
+                    "22933978589",
+                    "22933978586",
+                    True,
+                    '[{"id": "81570852", "name": "5441", "adUnitCode": "5441"}, {"id": "22933379790", "name": "iu", "adUnitCode": "iu"}, {"id": "22933978586", "name": "interstitial", "adUnitCode": "interstitial"}]',
+                    "maw-metacritic",
+                    "BLANK",
+                    "ACTIVE"]]
+            data_df_in = pd.DataFrame(expected_data_2,columns_to_keep_2)
+            data_df_out = get_service_data_from_admanager(service_2, query_filter_2,columns_to_keep)
+            self.assertTrue((data_df_out == data_df_in).all().all())
+            
+            
 
 
 #TBD Ad Manager tests
-"""def ad_manager_test():
-    # Test for get_data_from_admanager function
-    start_day = '01'
-    end_day = '02'
-    start_month = '03'
-    end_month = '03'
-    year = '2024'
-
-    query = ""
-    dimensions = ['DATE']
-    columns = ['TOTAL_ACTIVE_VIEW_MEASURABLE_IMPRESSIONS']
-    start_date = {'year': year,
-                'month': start_month,
-                'day': start_day}
-    stop_date = {'year': year,
-                'month': end_month,
-                'day': end_day}
-
-    df_gam = get_data_from_admanager(query, dimensions, columns,
-                                    start_date, stop_date)
-
-    # print(df_gam)
-    assert (df_gam == pd.DataFrame(
-        [
-            ['2024-03-01', 140913485],
-            ['2024-03-02', 162338202]
-        ], columns=['Dimension.DATE',
-                    'Column.TOTAL_ACTIVE_VIEW_MEASURABLE_IMPRESSIONS']
-    )).all().all()
-
-
-    # Test for get_service_data_from_admanager function
-    service = "AdUnit"
-    query_filter = "WHERE status = 'ACTIVE' AND id IN ('22067796444', '22933978589')"
-
-    columns_to_keep = [
-        "id",
-        "parentId",
-        "hasChildren",
-        "parentPath",
-        "adUnitCode",
-        "targetWindow",
-        "status",
-    ]
-
-    expected_data = [
-        [
-            "22067796444",
-            "22067796441",
-            False,
-            '[{"id": "81570852", "name": "5441", "adUnitCode": "5441"}, {"id": "21787210647", "name": "vm1b.mr", "adUnitCode": "vm1b.mr"}, {"id": "21786989669", "name": "top_boxad", "adUnitCode": "top_boxad"}, {"id": "21788841311", "name": "smartphone", "adUnitCode": "smartphone"}, {"id": "22067796441", "name": "ns-curated", "adUnitCode": "ns-curated"}]',
-            "_fandom-all",
-            "BLANK",
-            "ACTIVE",
-        ],
-        [
-            "22933978589",
-            "22933978586",
-            True,
-            '[{"id": "81570852", "name": "5441", "adUnitCode": "5441"}, {"id": "22933379790", "name": "iu", "adUnitCode": "iu"}, {"id": "22933978586", "name": "interstitial", "adUnitCode": "interstitial"}]',
-            "maw-metacritic",
-            "BLANK",
-            "ACTIVE",
-        ],
-    ]
-
-    expected_df = pd.DataFrame(
-        expected_data,
-        columns=[
-            "id",
-            "parentId",
-            "hasChildren",
-            "parentPath",
-            "adUnitCode",
-            "targetWindow",
-            "status",
-        ],
-    )
-
-    actual_df = get_service_data_from_admanager(
-        service=service,
-        query_filter=query_filter,
-        columns_to_keep=columns_to_keep,
-    )
-
-    pd.testing.assert_frame_equal(actual_df, expected_df)
-
-
     # Test for get_service_data_from_admanager function CustomTargetingKeys
     service = "CustomTargetingKeys"
     query_filter = "WHERE id in ('415092','415212')"
