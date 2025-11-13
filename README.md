@@ -3,19 +3,22 @@
 # sroka package
 
 Package providing simple Python access to data in:
-* Google Analytics
 * Google AdManager (GAM earlier DoubleClick for Publishers, DFP)
 * Google sheets
 * Google BigQuery
-* MOAT
-* Qubole
-* Rubicon
 * AWS Athena
 * AWS s3
 * MySQL
+* snowflake
+
+Connectors that exist but are no longer maintained due to restricted access to the tools:
+* Google Analytics
+* MOAT
+* Qubole
+* Rubicon
 * neo4j
 
-Sroka library was checked to work for Python **>=3.8, <=3.11**.
+Sroka library was checked to work for Python **>=3.9, <=3.13**.
 
 ## Developers
 
@@ -45,7 +48,7 @@ Please target Pull Requests against `dev` branch.
 ## Configuration
 
 in home folder create `~/.sroka_config` (hidden folder) file where you will store:
-* ```config.ini``` file based on ```config.sample.ini``` with information to access Qubole, MOAT, Athena, S3 and Rubicon
+* ```config.ini``` file based on ```config.sample.ini``` with information to access Qubole, MOAT, Athena, S3, Snowflake and Rubicon
 * ```client_secrets.json``` for GA access
 * ```ad_manager.json``` for GAM access
 * ```credentials.json``` for Google sheets access
