@@ -1,13 +1,9 @@
-from __future__ import print_function
-
-import os
-
 import numpy as np
 import pandas as pd
-from googleapiclient.discovery import build
+
+from __future__ import print_function
 from googleapiclient.errors import HttpError
 from google_drive_helpers import is_valid_email, service_builder
-import sroka.config.config as config
 
 def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_columns=False):
     """
@@ -27,17 +23,6 @@ def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_colu
     """
 
     # Authenticate and construct service.
-    """scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_sheets/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('sheets', 'v4', credentials=credentials)"""
-
     service = service_builder(1, 'v4')
 
     sheet = service.spreadsheets()
@@ -71,16 +56,7 @@ def google_drive_sheets_create(name: str):
              string ('') if an HttpError occurred during creation.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_create.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('sheets', 'v4', credentials=credentials)
+    service = service_builder(1, 'v4')
     spreadsheet = {
         'properties': {
             'title': name
@@ -109,16 +85,7 @@ def google_drive_sheets_add_tab(spreadsheet_id: str, name: str):
         str: The ID of the spreadsheet.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_create.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('sheets', 'v4', credentials=credentials)
+    service = service_builder(1, 'v4')
 
     data = [{
         'addSheet': {
@@ -155,16 +122,7 @@ def google_drive_sheets_write(data, spreadsheet_id: str, sheet_range='Sheet1!A1'
         None: The function primarily prints success/error messages and returns None upon completion or error.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_create.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('sheets', 'v4', credentials=credentials)
+    service = service_builder(1, 'v4')
 
     values = data.values.tolist()
     columns = list(data.columns)
@@ -189,7 +147,7 @@ def google_drive_sheets_write(data, spreadsheet_id: str, sheet_range='Sheet1!A1'
     except HttpError as err:
         print("HTTP error occurred. Error:")
         print(err)
-        return None
+        return False
 
     print('Successfully uploaded to google sheets: https://docs.google.com/spreadsheets/d/' + spreadsheet_id)
     return None
@@ -218,7 +176,7 @@ def google_drive_sheets_upload(data, name: str,
     return spreadsheet_id
 
 
-def google_drive_move_file(file_id: str, old_folder_id: str, new_folder_id: str):
+def google_drive_move_file(file_id: str, new_folder_id: str):
     """
     Moves a file from one folder to another in Google Drive.
 
@@ -228,8 +186,6 @@ def google_drive_move_file(file_id: str, old_folder_id: str, new_folder_id: str)
 
     Args:
         file_id (str): The ID of the file to move.
-        old_folder_id (str): The ID of the current parent folder. Use 'root' 
-                             if the file is in the main Drive page.
         new_folder_id (str): The ID of the target parent folder. Use 'root' 
                              to move the file to the main Drive page.
 
@@ -237,17 +193,8 @@ def google_drive_move_file(file_id: str, old_folder_id: str, new_folder_id: str)
         bool: True if the file was moved successfully, False otherwise.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('drive', 'v3', credentials=credentials)
+    service = service_builder(2, 'v3')
+    old_folder_id = ",".join(google_drive_get_file_parents(file_id))
 
     try:
         #Prepare the update request body (empty, as we only manipulate parents)
@@ -283,20 +230,12 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
     Args:
         spreadsheet_id (str): The ID of the spreadsheet.
         tab_name (str): The name of the tab to delete.
+    
+    Returns:
+        str: The ID of the spreadsheet.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_create.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(
-        authorized_user_file,
-        key_file_location,
-        scope
-    )
-
-    service = build('sheets', 'v4', credentials=credentials)
+    service = service_builder(1, 'v4')
 
     try:
         # Retrieve spreadsheet info to find sheet/tab ID
@@ -312,7 +251,7 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
 
         if sheet_id is None:
             print(f"Sheet '{tab_name}' not found in spreadsheet {spreadsheet_id}.")
-            return None
+            return False
 
         # Delete the tab by ID
         request_body = {
@@ -328,7 +267,7 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
     except HttpError as err:
         print("HTTP error occurred during tab deletion:")
         print(err)
-        return None
+        return False
     
 
 def google_drive_get_file_parents(file_id: str):
@@ -342,16 +281,7 @@ def google_drive_get_file_parents(file_id: str):
         list: A list of string IDs for the parent folder(s) of the file. Returns an empty list on failure.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('drive', 'v3', credentials=credentials)
+    service = service_builder(2, 'v3')
 
     try:
         #pylint: disable=E1101
@@ -388,16 +318,7 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
         print(f"Please provide a correct e-mail address: {err}")
         return False
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('drive', 'v3', credentials=credentials)
+    service = service_builder(2, 'v3')
 
     try:
         #Define the permission body for the new owner
@@ -461,16 +382,7 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
         print(f"Please provide a correct e-mail address: {err}")
         return False
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('drive', 'v3', credentials=credentials)
+    service = service_builder(3, 'v3')
 
     try:
         #Define the permission body for the target user and role
@@ -510,18 +422,8 @@ def google_drive_sheets_tab_names(spreadsheet_id: str):
         str: The list of tab names.
     """
     
-    scope = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(
-        authorized_user_file,
-        key_file_location,
-        scope
-    )
-
-    service = build('sheets', 'v4', credentials=credentials)
+    service = service_builder(1, 'v4')
+    
     metadata = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
     sheet_names = [s['properties'].get('title') for s in metadata.get('sheets', []) if 'properties' in s]
 
@@ -544,16 +446,7 @@ def google_drive_check_file_permissions(file_id: str):
               Returns an empty dictionary on failure.
     """
 
-    scope = 'https://www.googleapis.com/auth/drive'
-    key_file_location = config.get_file_path('google_drive')
-    authorized_user_file = os.path.expanduser('~/.cache/google_drive/token_read.json')
-    os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
-
-    credentials = config.set_google_credentials(authorized_user_file,
-                                                key_file_location,
-                                                scope)
-
-    service = build('drive', 'v3', credentials=credentials)
+    service = service_builder(2, 'v3')
     
     # Creating a dictionary
     permission_dict = {}
@@ -580,8 +473,8 @@ def google_drive_check_file_permissions(file_id: str):
     except HttpError as error:
         print(f"An API error occurred while checking permissions: {error}")
         # Return an empty dict on error for consistent return type
-        return {}
+        return False
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return {}
+        return False
     
