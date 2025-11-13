@@ -28,7 +28,7 @@ def service_builder(service_type: int, version: str):
                     - 'v4'
 
     Returns:
-        TBTested
+        Google API Service Object (Resource object from the googleapiclient.discovery library)
     """
 
     try:
