@@ -6,9 +6,8 @@ import numpy as np
 import pandas as pd
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-
+from google_drive_helpers import is_valid_email, service_builder
 import sroka.config.config as config
-
 
 def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_columns=False):
     """
@@ -23,12 +22,12 @@ def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_colu
                                             Defaults to False.
 
     Returns:
-        pd.DataFrame: A pandas DataFrame containing the data read from the sheet.
+        pd.DataFrame: A Pandas DataFrame containing the data read from the sheet.
                       Returns an empty DataFrame if an HttpError occurs during the API call.
     """
 
     # Authenticate and construct service.
-    scope = 'https://www.googleapis.com/auth/spreadsheets.readonly'
+    """scope = 'https://www.googleapis.com/auth/drive'
     key_file_location = config.get_file_path('google_drive')
     authorized_user_file = os.path.expanduser('~/.cache/google_sheets/token_read.json')
     os.makedirs(os.path.dirname(authorized_user_file), exist_ok=True)
@@ -37,7 +36,9 @@ def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_colu
                                                 key_file_location,
                                                 scope)
 
-    service = build('sheets', 'v4', credentials=credentials)
+    service = build('sheets', 'v4', credentials=credentials)"""
+
+    service = service_builder(1, 'v4')
 
     sheet = service.spreadsheets()
     try:
@@ -142,7 +143,7 @@ def google_drive_sheets_write(data, spreadsheet_id: str, sheet_range='Sheet1!A1'
     Function to write to existing google sheet starting at a given range.
 
     Args:
-        data: Ideall, a pandas DataFrame.
+        data: Pandas DataFrame.
         spreadsheet_id (str): The ID of the Spreadsheet.
         sheet_range (str): The range to start writing data - If not changed, the deafult value is 'Sheet1!A1'.
         with_columns (bool): If True, includes the DataFrame's column headers as the first row. 
@@ -200,7 +201,7 @@ def google_drive_sheets_upload(data, name: str,
     Creates a new Google Spreadsheet and uploads data to its first sheet.
 
     Args:
-        data: Ideall, a pandas DataFrame.
+        data: Pandas DataFrame.
         name (str): The name to assign to the new Google Spreadsheet file.
         with_columns (bool): If True, includes the DataFrame's column headers as the first row. 
                             The deafult value is True.
@@ -226,7 +227,6 @@ def google_drive_move_file(file_id: str, old_folder_id: str, new_folder_id: str)
     2. Add the ID of the new folder.
 
     Args:
-        service: The initialized Google Drive API service client.
         file_id (str): The ID of the file to move.
         old_folder_id (str): The ID of the current parent folder. Use 'root' 
                              if the file is in the main Drive page.
@@ -374,13 +374,19 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
     the current owner (the user running this code) to an editor role.
 
     Args:
-        service: The initialized Google Drive API service client.
         file_id (str): The ID of the file to transfer ownership of.
         new_owner_email (str): The email address of the new owner.
 
     Returns:
         bool: True if the ownership request was successful, False otherwise.
     """
+
+    try:
+        if is_valid_email(new_owner_email) is False:
+            raise ValueError(f'The {new_owner_email} is incorrect.')
+    except ValueError as err:
+        print(f"Please provide a correct e-mail address: {err}")
+        return False
 
     scope = 'https://www.googleapis.com/auth/drive'
     key_file_location = config.get_file_path('google_drive')
@@ -398,7 +404,7 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
         permission_body = {
             'type': 'user',
             'role': 'owner',
-            'emailAddress': new_owner_email
+            'emailAddress': new_owner_email.lower()
         }
 
         #Create the permission, triggering the ownership transfer
@@ -425,14 +431,11 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
 
 
 def google_drive_change_file_permission(file_id: str, user_email: str, role: str):
-
-
     """
     Adds a new permission to a file, granting a specific role (view/edit/comment) 
     to a user via email.
 
     Args:
-        service: The initialized Google Drive API service client.
         file_id (str): The ID of the file to modify permissions for.
         user_email (str): The email address of the user receiving the permission.
         role (str): The access level to grant. Common values:
@@ -443,6 +446,20 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
     Returns:
         bool: True if the permission was added successfully, False otherwise.
     """
+    try:
+        valid_role = ['reader', 'writer', 'commenter']
+        if role.lower() not in valid_role:
+            raise ValueError('Available roles: reader, writer, commenter')   
+    except ValueError as er:
+        print(f"An incorrect role has been used in the fucntion - {er}")
+        return False
+    
+    try:
+        if is_valid_email(user_email) is False:
+            raise ValueError(f'The {user_email} is incorrect.')
+    except ValueError as err:
+        print(f"Please provide a correct e-mail address: {err}")
+        return False
 
     scope = 'https://www.googleapis.com/auth/drive'
     key_file_location = config.get_file_path('google_drive')
@@ -459,8 +476,8 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
         #Define the permission body for the target user and role
         permission_body = {
             'type': 'user',
-            'role': role,
-            'emailAddress': user_email
+            'role': role.lower(),
+            'emailAddress': user_email.lower()
         }
         
         #Insert the new permission
@@ -487,7 +504,6 @@ def google_drive_sheets_tab_names(spreadsheet_id: str):
     Retrieves the names of all tabs (worksheets) in a Google Sheets spreadsheet.
 
     Args:
-        data: Ideall, a pandas DataFrame.
         spreadsheet_id (str): The ID of the Spreadsheet.
 
     Returns:
@@ -568,3 +584,4 @@ def google_drive_check_file_permissions(file_id: str):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return {}
+    
