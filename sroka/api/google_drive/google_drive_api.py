@@ -373,7 +373,7 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
         if role.lower() not in valid_role:
             raise ValueError('Available roles: reader, writer, commenter')   
     except ValueError as er:
-        print(f"An incorrect role has been used in the fucntion - {er}")
+        print(f"An incorrect role has been used in the function - {er}")
         return False
     
     try:
@@ -383,7 +383,7 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
         print(f"Please provide a correct e-mail address: {err}")
         return False
 
-    service = service_builder(3, 'v3')
+    service = service_builder(2, 'v3')
 
     try:
         #Define the permission body for the target user and role
