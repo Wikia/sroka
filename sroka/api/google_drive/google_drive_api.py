@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from googleapiclient.errors import HttpError
-from google_drive_helpers import is_valid_email, service_builder
+from sroka.api.google_drive.google_drive_helpers import is_valid_email, service_builder
 
 def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_columns=False):
     """
