@@ -6,6 +6,7 @@ import pandas as pd
 from googleapiclient.errors import HttpError
 from sroka.api.google_drive.google_drive_helpers import is_valid_email, service_builder
 
+
 def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_columns=False):
     """
     Reads data from a specified range in a Google Spreadsheet.
@@ -15,7 +16,7 @@ def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_colu
         sheet_range (str): The A1 notation range of the data to retrieve (e.g., 'Sheet1!A1:D7').
         first_row_columns (bool): If True, treats the first row of the retrieved data
                                             as the column headers for the resulting DataFrame and removes
-                                            that row from the data. 
+                                            that row from the data.
                                             Defaults to False.
 
     Returns:
@@ -114,9 +115,9 @@ def google_drive_sheets_write(data, spreadsheet_id: str, sheet_range='Sheet1!A1'
         data: Pandas DataFrame.
         spreadsheet_id (str): The ID of the Spreadsheet.
         sheet_range (str): The range to start writing data - If not changed, the deafult value is 'Sheet1!A1'.
-        with_columns (bool): If True, includes the DataFrame's column headers as the first row. 
+        with_columns (bool): If True, includes the DataFrame's column headers as the first row.
                             The deafult value is True.
-        with_index (bool, optional): If True, includes the DataFrame's index as the first column. 
+        with_index (bool, optional): If True, includes the DataFrame's index as the first column.
                             The deafult value is False.
 
     Returns:
@@ -162,9 +163,9 @@ def google_drive_sheets_upload(data, name: str,
     Args:
         data: Pandas DataFrame.
         name (str): The name to assign to the new Google Spreadsheet file.
-        with_columns (bool): If True, includes the DataFrame's column headers as the first row. 
+        with_columns (bool): If True, includes the DataFrame's column headers as the first row.
                             The deafult value is True.
-        with_index (bool, optional): If True, includes the DataFrame's index as the first column. 
+        with_index (bool, optional): If True, includes the DataFrame's index as the first column.
                             The deafult value is False.
 
     Returns:
@@ -187,7 +188,7 @@ def google_drive_move_file(file_id: str, new_folder_id: str):
 
     Args:
         file_id (str): The ID of the file to move.
-        new_folder_id (str): The ID of the target parent folder. Use 'root' 
+        new_folder_id (str): The ID of the target parent folder. Use 'root'
                              to move the file to the main Drive page.
 
     Returns:
@@ -198,17 +199,17 @@ def google_drive_move_file(file_id: str, new_folder_id: str):
     old_folder_id = ",".join(google_drive_get_file_parents(file_id))
 
     try:
-        #Prepare the update request body (empty, as we only manipulate parents)
-        #pylint: disable=E1101
+        # Prepare the update request body (empty, as we only manipulate parents)
+        # pylint: disable=E1101
         file = service.files().update(
             fileId=file_id,
             addParents=new_folder_id,
             removeParents=old_folder_id,
-            #We only need the ID and parents list back to confirm the change
+            # We only need the ID and parents list back to confirm the change
             fields='id, parents'
         ).execute()
 
-        #Check if the new folder ID is in the updated parents list
+        # Check if the new folder ID is in the updated parents list
         if new_folder_id in file.get('parents', []):
             print(f"Success: File '{file_id}' moved from '{old_folder_id}' to '{new_folder_id}'.")
             return True
@@ -230,8 +231,7 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
 
     Args:
         spreadsheet_id (str): The ID of the spreadsheet.
-        tab_name (str): The name of the tab to delete.
-    
+        tab_name (str): The name of the tab to delete.  
     Returns:
         str: The ID of the spreadsheet.
     """
@@ -240,7 +240,7 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
 
     try:
         # Retrieve spreadsheet info to find sheet/tab ID
-        #pylint: disable=E1101
+        # pylint: disable=E1101
         spreadsheet = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
         sheets = spreadsheet.get('sheets', [])
         sheet_id = None
@@ -269,7 +269,7 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
         print("HTTP error occurred during tab deletion:")
         print(err)
         return False
-    
+
 
 def google_drive_get_file_parents(file_id: str):
     """
@@ -285,12 +285,11 @@ def google_drive_get_file_parents(file_id: str):
     service = service_builder(2, 'v3')
 
     try:
-        #pylint: disable=E1101
+        # pylint: disable=E1101
         file_metadata = service.files().get(fileId=file_id, fields='parents').execute()
-        
-        #Returns a list of parent IDs (most files only have one parent)
+        # Returns a list of parent IDs (most files only have one parent)
         print(f"Success: File '{file_id}' has parent(s): {file_metadata.get('parents', [])}")
-        return file_metadata.get('parents', []) 
+        return file_metadata.get('parents', [])
     except HttpError as error:
         print(f"Error getting parents: {error}")
         return []
@@ -322,20 +321,20 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
     service = service_builder(2, 'v3')
 
     try:
-        #Define the permission body for the new owner
+        # Define the permission body for the new owner
         permission_body = {
             'type': 'user',
             'role': 'owner',
             'emailAddress': new_owner_email.lower()
         }
 
-        #Create the permission, triggering the ownership transfer
-        #pylint: disable=E1101
+        # Create the permission, triggering the ownership transfer
+        # pylint: disable=E1101
         permission = service.permissions().create(
             fileId=file_id,
             body=permission_body,
             transferOwnership=True,
-            #Limit on response data
+            # Limit on response data
             fields='id'
         ).execute()
 
@@ -354,7 +353,7 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
 
 def google_drive_change_file_permission(file_id: str, user_email: str, role: str):
     """
-    Adds a new permission to a file, granting a specific role (view/edit/comment) 
+    Adds a new permission to a file, granting a specific role (view/edit/comment)
     to a user via email.
 
     Args:
@@ -371,11 +370,11 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
     try:
         valid_role = ['reader', 'writer', 'commenter']
         if role.lower() not in valid_role:
-            raise ValueError('Available roles: reader, writer, commenter')   
+            raise ValueError('Available roles: reader, writer, commenter')
     except ValueError as er:
         print(f"An incorrect role has been used in the function - {er}")
         return False
-    
+   
     try:
         if is_valid_email(user_email) is False:
             raise ValueError(f'The {user_email} is incorrect.')
@@ -386,15 +385,15 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
     service = service_builder(2, 'v3')
 
     try:
-        #Define the permission body for the target user and role
+        # Define the permission body for the target user and role
         permission_body = {
             'type': 'user',
             'role': role.lower(),
             'emailAddress': user_email.lower()
         }
         
-        #Insert the new permission
-        #pylint: disable=E1101
+        # Insert the new permission
+        # pylint: disable=E1101
         permission = service.permissions().create(
             fileId=file_id,
             body=permission_body,
@@ -422,9 +421,7 @@ def google_drive_sheets_tab_names(spreadsheet_id: str):
     Returns:
         str: The list of tab names.
     """
-    
     service = service_builder(1, 'v4')
-    
     metadata = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
     sheet_names = [s['properties'].get('title') for s in metadata.get('sheets', []) if 'properties' in s]
 
@@ -433,7 +430,7 @@ def google_drive_sheets_tab_names(spreadsheet_id: str):
 
 def google_drive_check_file_permissions(file_id: str):
     """
-    Retrieves all user-specific permissions for a file and returns them as a map 
+    Retrieves all user-specific permissions for a file and returns them as a map
     of {email: role}.
     This function maps only permissions linked to a specific user (not 'anyone',
     'domain', or 'group')and that have an email address present.
@@ -442,13 +439,12 @@ def google_drive_check_file_permissions(file_id: str):
         file_id (str): The ID of the file to check.
 
     Returns:
-        dict: A map where keys are email addresses (str) and values are 
-              their roles (str, e.g., 'owner', 'writer', 'reader'). 
+        dict: A map where keys are email addresses (str) and values are
+              their roles (str, e.g., 'owner', 'writer', 'reader').
               Returns an empty dictionary on failure.
     """
 
     service = service_builder(2, 'v3')
-    
     # Creating a dictionary
     permission_dict = {}
 
@@ -457,7 +453,7 @@ def google_drive_check_file_permissions(file_id: str):
         # pylint: disable=E1101
         permissions = service.permissions().list(
             fileId=file_id,
-            fields='permissions(emailAddress, role, type)' 
+            fields='permissions(emailAddress, role, type)'
         ).execute()
 
         # Iterate through the permissions and build the map
@@ -478,4 +474,3 @@ def google_drive_check_file_permissions(file_id: str):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return False
-    
