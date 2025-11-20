@@ -1,7 +1,8 @@
+from __future__ import print_function
+
 import numpy as np
 import pandas as pd
 
-from __future__ import print_function
 from googleapiclient.errors import HttpError
 from google_drive_helpers import is_valid_email, service_builder
 
