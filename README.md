@@ -3,19 +3,22 @@
 # sroka package
 
 Package providing simple Python access to data in:
-* Google Analytics
 * Google AdManager (GAM earlier DoubleClick for Publishers, DFP)
 * Google sheets
 * Google BigQuery
-* MOAT
-* Qubole
-* Rubicon
 * AWS Athena
 * AWS s3
 * MySQL
-* neo4j
 
-Sroka library was checked to work for Python **>=3.8, <=3.11**.
+
+Stale, no longer tested:
+* Google Analytics
+* MOAT
+* Qubole
+* Rubicon
+* Neo4j
+
+Sroka library was checked to work for Python **>=3.10, <=3.14**.
 
 ## Developers
 
