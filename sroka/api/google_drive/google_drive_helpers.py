@@ -1,4 +1,5 @@
-import os, re
+import os
+import re
 from googleapiclient.discovery import build
 import sroka.config.config as config
 
@@ -7,6 +8,9 @@ def is_valid_email(email_string: str):
     """Checks if a string structurally matches the email regex.
     Args:
         email_string (str): The e-mail address.
+
+    Returns:
+        bool: True if the email matches the regex pattern (is a valid email address), False otherwise.
     """
 
     email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -20,8 +24,8 @@ def service_builder(service_type: int, version: str):
 
     Args:
         service_type (int): Acceptable services:
-                    - PRESS 1 for 'sheets': Google Sheets operations
-                    - PRESS 2 for 'drive': Google Drive operations
+                    - 1 is assigned to 'sheets': Google Sheets operations
+                    - 2 is assigned to 'drive': Google Drive operations
         version (str): Acceptable versions:
                     - 'v2'
                     - 'v3'
@@ -36,7 +40,7 @@ def service_builder(service_type: int, version: str):
         if service_type not in valid_service_type:
             raise ValueError('Available services: [1] sheets, [2] drive')   
     except ValueError as e:
-        print(f"An incorrect role has been used in the fucntion - {e}")
+        print(f"An incorrect role has been used in the function - {e}")
         return False
     
     try:
@@ -44,7 +48,7 @@ def service_builder(service_type: int, version: str):
         if version.lower() not in valid_version:
             raise ValueError('Available versions: v2, v3, v4')   
     except ValueError as er:
-        print(f"An incorrect version has been used in the fucntion - {er}")
+        print(f"An incorrect version has been used in the function - {er}")
         return False
 
     scope = 'https://www.googleapis.com/auth/drive'
@@ -62,5 +66,3 @@ def service_builder(service_type: int, version: str):
     if service_type == 2:
         service = build('drive', version, credentials=credentials)
         return service
-    else:
-        return False

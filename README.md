@@ -4,7 +4,7 @@
 
 Package providing simple Python access to data in:
 * Google AdManager (GAM earlier DoubleClick for Publishers, DFP)
-* Google sheets
+* Google Sheets
 * Google BigQuery
 * AWS Athena
 * AWS s3
@@ -164,7 +164,7 @@ If you encounter RefreshError similar to
 `google.auth.exceptions.RefreshError: ('invalid_grant: Bad Request', '{\n  "error": "invalid_grant",\n  "error_description": "Bad Request"\n}')`
 , try removing all files from `~/.cache` directory.
 
-We advice removing all files from `~/.cache` directory for each new sroka update.
+We advise removing all files from `~/.cache` directory for each new sroka update.
 
 ## Credits
 

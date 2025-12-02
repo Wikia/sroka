@@ -334,7 +334,6 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
             fileId=file_id,
             body=permission_body,
             transferOwnership=True,
-            # Limit on response data
             fields='id'
         ).execute()
 
@@ -419,7 +418,7 @@ def google_drive_sheets_tab_names(spreadsheet_id: str):
         spreadsheet_id (str): The ID of the Spreadsheet.
 
     Returns:
-        str: The list of tab names.
+        list: The list of tab names.
     """
     service = service_builder(1, 'v4')
     metadata = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
@@ -433,7 +432,7 @@ def google_drive_check_file_permissions(file_id: str):
     Retrieves all user-specific permissions for a file and returns them as a map
     of {email: role}.
     This function maps only permissions linked to a specific user (not 'anyone',
-    'domain', or 'group')and that have an email address present.
+    'domain', or 'group') and that have an email address present.
 
     Args:
         file_id (str): The ID of the file to check.
@@ -445,18 +444,15 @@ def google_drive_check_file_permissions(file_id: str):
     """
 
     service = service_builder(2, 'v3')
-    # Creating a dictionary
     permission_dict = {}
 
     try:
-        # Retrieve the list of all permissions for the file
         # pylint: disable=E1101
         permissions = service.permissions().list(
             fileId=file_id,
             fields='permissions(emailAddress, role, type)'
         ).execute()
 
-        # Iterate through the permissions and build the map
         for permission in permissions.get('permissions', []):
             p_type = permission.get('type')
             p_email = permission.get('emailAddress')
@@ -469,7 +465,6 @@ def google_drive_check_file_permissions(file_id: str):
 
     except HttpError as error:
         print(f"An API error occurred while checking permissions: {error}")
-        # Return an empty dict on error for consistent return type
         return False
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
