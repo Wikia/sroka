@@ -114,11 +114,11 @@ def google_drive_sheets_write(data, spreadsheet_id: str, sheet_range='Sheet1!A1'
     Args:
         data: Pandas DataFrame.
         spreadsheet_id (str): The ID of the Spreadsheet.
-        sheet_range (str): The range to start writing data - If not changed, the deafult value is 'Sheet1!A1'.
+        sheet_range (str): The range to start writing data - If not changed, the default value is 'Sheet1!A1'.
         with_columns (bool): If True, includes the DataFrame's column headers as the first row.
-                            The deafult value is True.
+                            The default value is True.
         with_index (bool, optional): If True, includes the DataFrame's index as the first column.
-                            The deafult value is False.
+                            The default value is False.
 
     Returns:
         None: The function primarily prints success/error messages and returns None upon completion or error.
@@ -149,7 +149,7 @@ def google_drive_sheets_write(data, spreadsheet_id: str, sheet_range='Sheet1!A1'
     except HttpError as err:
         print("HTTP error occurred. Error:")
         print(err)
-        return False
+        return None
 
     print('Successfully uploaded to google sheets: https://docs.google.com/spreadsheets/d/' + spreadsheet_id)
     return None
@@ -164,9 +164,9 @@ def google_drive_sheets_upload(data, name: str,
         data: Pandas DataFrame.
         name (str): The name to assign to the new Google Spreadsheet file.
         with_columns (bool): If True, includes the DataFrame's column headers as the first row.
-                            The deafult value is True.
+                            The default value is True.
         with_index (bool, optional): If True, includes the DataFrame's index as the first column.
-                            The deafult value is False.
+                            The default value is False.
 
     Returns:
         str: The ID of the newly created Google Spreadsheet.
@@ -268,17 +268,17 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
     except HttpError as err:
         print("HTTP error occurred during tab deletion:")
         print(err)
-        return False
+        return None
 
 
 def google_drive_get_file_parents(file_id: str):
     """
     Retrieves the parent folder IDs for a specified file on Google Drive.
        
-    Arg:
+    Args:
         file_id (str): The ID of the file whose parent folders are to be retrieved.
     
-    Retruns:
+    Returns:
         list: A list of string IDs for the parent folder(s) of the file. Returns an empty list on failure.
     """
 
@@ -334,7 +334,6 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
             fileId=file_id,
             body=permission_body,
             transferOwnership=True,
-            # Limit on response data
             fields='id'
         ).execute()
 
@@ -419,7 +418,7 @@ def google_drive_sheets_tab_names(spreadsheet_id: str):
         spreadsheet_id (str): The ID of the Spreadsheet.
 
     Returns:
-        str: The list of tab names.
+        list: The list of tab names.
     """
     service = service_builder(1, 'v4')
     metadata = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
@@ -433,7 +432,7 @@ def google_drive_check_file_permissions(file_id: str):
     Retrieves all user-specific permissions for a file and returns them as a map
     of {email: role}.
     This function maps only permissions linked to a specific user (not 'anyone',
-    'domain', or 'group')and that have an email address present.
+    'domain', or 'group') and that have an email address present.
 
     Args:
         file_id (str): The ID of the file to check.
@@ -445,18 +444,15 @@ def google_drive_check_file_permissions(file_id: str):
     """
 
     service = service_builder(2, 'v3')
-    # Creating a dictionary
     permission_dict = {}
 
     try:
-        # Retrieve the list of all permissions for the file
         # pylint: disable=E1101
         permissions = service.permissions().list(
             fileId=file_id,
             fields='permissions(emailAddress, role, type)'
         ).execute()
 
-        # Iterate through the permissions and build the map
         for permission in permissions.get('permissions', []):
             p_type = permission.get('type')
             p_email = permission.get('emailAddress')
@@ -469,8 +465,7 @@ def google_drive_check_file_permissions(file_id: str):
 
     except HttpError as error:
         print(f"An API error occurred while checking permissions: {error}")
-        # Return an empty dict on error for consistent return type
-        return False
+        return None
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return False
+        return None
