@@ -3,19 +3,22 @@
 # sroka package
 
 Package providing simple Python access to data in:
-* Google Analytics
 * Google AdManager (GAM earlier DoubleClick for Publishers, DFP)
-* Google sheets
+* Google Sheets
 * Google BigQuery
-* MOAT
-* Qubole
-* Rubicon
 * AWS Athena
 * AWS s3
 * MySQL
-* neo4j
 
-Sroka library was checked to work for Python **>=3.8, <=3.11**.
+
+Stale, no longer tested:
+* Google Analytics
+* MOAT
+* Qubole
+* Rubicon
+* Neo4j
+
+Sroka library was checked to work for Python **>=3.10, <=3.14**.
 
 ## Developers
 
@@ -160,6 +163,8 @@ export LANG=en_US.UTF-8
 If you encounter RefreshError similar to 
 `google.auth.exceptions.RefreshError: ('invalid_grant: Bad Request', '{\n  "error": "invalid_grant",\n  "error_description": "Bad Request"\n}')`
 , try removing all files from `~/.cache` directory.
+
+We advise removing all files from `~/.cache` directory for each new sroka update.
 
 ## Credits
 
