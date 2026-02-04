@@ -180,15 +180,12 @@ def google_drive_sheets_upload(data, name: str,
 
 def google_drive_move_file(file_id: str, new_folder_id: str):
     """
-    Moves a file from one folder to another in Google Drive.
-
-    The move operation is done by updating the file's 'parents' property:
-    1. Remove the ID of the old folder.
-    2. Add the ID of the new folder.
+    Move a file to a new folder within your Drive or on the Shared Drive.
+    You must have editor access to both: the file and the destination folder.
 
     Args:
         file_id (str): The ID of the file to move.
-        new_folder_id (str): The ID of the target parent folder. Use 'root'
+        new_folder_id (str): The ID of the folder to move into. Use 'root'
                              to move the file to the main Drive page.
 
     Returns:
@@ -196,32 +193,34 @@ def google_drive_move_file(file_id: str, new_folder_id: str):
     """
 
     service = service_builder(2, 'v3')
-    old_folder_id = ",".join(google_drive_get_file_parents(file_id))
-
     try:
-        # Prepare the update request body (empty, as we only manipulate parents)
+        # Get current parents
         # pylint: disable=E1101
-        file = service.files().update(
+        file = service.files().get(
             fileId=file_id,
-            addParents=new_folder_id,
-            removeParents=old_folder_id,
-            # We only need the ID and parents list back to confirm the change
-            fields='id, parents'
+            fields="parents",
+            supportsAllDrives=True
         ).execute()
 
-        # Check if the new folder ID is in the updated parents list
-        if new_folder_id in file.get('parents', []):
-            print(f"Success: File '{file_id}' moved from '{old_folder_id}' to '{new_folder_id}'.")
-            return True
-        else:
-            print(f"Warning: File '{file_id}' updated, but new parent not confirmed.")
+        old_parents = ",".join(file.get("parents", []))  # join in case multiple parents
+
+        # Move the file by updating parents
+        # pylint: disable=E1101
+        updated_file = service.files().update(
+            fileId=file_id,
+            addParents=new_folder_id,
+            removeParents=old_parents,
+            fields="id, parents",
+            supportsAllDrives=True
+        ).execute()
+
+        if new_folder_id not in updated_file.get("parents", []):
             return False
+        
+        return True
 
     except HttpError as error:
-        print(f"An API error occurred while moving file: {error}")
-        return False
-    except Exception as e:
-        print(f"An unexpected error occurred while moving file: {e}")
+        print(f"API error while moving file {file_id}: {error}")
         return False
 
 
