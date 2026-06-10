@@ -14,7 +14,7 @@ def validate_input_dict(moat_dict):
             print('{} is not defined'.format(column))
             return False
 
-    if type(moat_dict['columns']) != list or moat_dict['columns'] == []:
+    if not isinstance(moat_dict['columns'], list) or moat_dict['columns'] == []:
         print('columns are not defined correctly')
         return False
 

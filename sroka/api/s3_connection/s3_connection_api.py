@@ -3,8 +3,8 @@ import warnings
 from io import BytesIO, StringIO
 
 import boto3
-import pandas as pd
 import numpy as np
+import pandas as pd
 import pyarrow.parquet as pq
 from botocore.exceptions import ClientError, ParamValidationError
 from pandas.errors import EmptyDataError
@@ -89,7 +89,7 @@ def s3_download_data(s3_filename, prefix=False, output_file=None, sep=',', skip_
 
     key_prefix = match.group(2)
 
-    if type(sep) == str and len(sep) == 1:
+    if isinstance(sep, str) and len(sep) == 1:
 
         data = _download_data(key_prefix, s3, bucket_name, prefix, sep, skip_empty_files,
                               first_row_columns)
@@ -111,15 +111,15 @@ def s3_upload_data(data, bucket, path, sep=','):
         aws_secret_access_key=access_key
     )
 
-    if type(sep) == str and len(sep) == 1:
+    if isinstance(sep, str) and len(sep) == 1:
 
         csv_buffer = StringIO()
 
-        if type(data) == pd.core.frame.DataFrame or type(data) == np.ndarray:
+        if isinstance(data, pd.core.frame.DataFrame) or isinstance(data, np.ndarray):
 
-            if type(data) == pd.core.frame.DataFrame:
+            if isinstance(data, pd.core.frame.DataFrame):
                 data.to_csv(csv_buffer, sep=sep)
-            elif type(data) == np.ndarray:
+            elif isinstance(data, np.ndarray):
                 np.savetxt(csv_buffer, data, delimiter=sep, fmt='%s')
 
             s3 = session.resource('s3')

@@ -22,44 +22,44 @@ except (KeyError, NoOptionError):
 
 def dict_type_checker(dict_argument, argument_name, mandatory=True):
     if mandatory:
-        if type(dict_argument) != dict:
+        if not isinstance(dict_argument, dict):
             print(f"""{argument_name} needs to be a dict""")
             return "Incorrect type"
     else:
-        if dict_argument and type(dict_argument) != dict:
+        if dict_argument and not isinstance(dict_argument, dict):
             print(f"""{argument_name} needs to be a dict""")
             return "Incorrect type"
 
 
 def int_type_checker(int_argument, argument_name, mandatory=True):
     if mandatory:
-        if type(int_argument) != int:
+        if not isinstance(int_argument, int):
             print(f"""{argument_name} needs to be an integer""")
             return "Incorrect type"
     else:
-        if int_argument and type(int_argument) != int:
+        if int_argument and not isinstance(int_argument, int):
             print(f"""{argument_name} needs to be an integer""")
             return "Incorrect type"
 
 
 def list_type_checker(list_argument, argument_name, mandatory=True):
     if mandatory:
-        if type(list_argument) != list:
+        if not isinstance(list_argument, list):
             print(f"""{argument_name} needs to be a list""")
             return "Incorrect type"
     else:
-        if list_argument and type(list_argument) != list:
+        if list_argument and not isinstance(list_argument, list):
             print(f"""{argument_name} needs to be a list""")
             return "Incorrect type"
 
 
 def str_type_checker(str_argument, argument_name, mandatory=True):
     if mandatory:
-        if type(str_argument) != str:
+        if not isinstance(str_argument, str):
             print(f"""{argument_name} needs to be a string""")
             return "Incorrect type"
     else:
-        if str_argument and type(str_argument) != str:
+        if str_argument and not isinstance(str_argument, str):
             print(f"""{argument_name} needs to be a string""")
             return "Incorrect type"
 
@@ -194,7 +194,7 @@ def get_users_from_admanager(query, dimensions, network_code=None):
                             print('Failed to generate user list. Incorrect dimension: {}'.format(e))
                             return
 
-                    user_df = user_df.append(dimensions_df, sort=False)
+                    user_df = pd.concat([user_df, dimensions_df], sort=False)
                 statement.offset += statement.limit
             else:
                 break
@@ -250,7 +250,7 @@ def get_companies_from_admanager(query, dimensions, network_code=None):
                             print('Failed to generate company list. Incorrect dimension: {}'.format(e))
                             return
 
-                    company_df = company_df.append(dimensions_df, sort=False)
+                    company_df = pd.concat([company_df, dimensions_df], sort=False)
                 statement.offset += statement.limit
             else:
                 break
@@ -403,7 +403,6 @@ def get_service_data_from_admanager(
         else:
             print("No more items found.")
             break
-
 
     print(
         f"Successfully fetched a total of {len(all_items)} '{service}' items.\n"

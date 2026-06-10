@@ -1,11 +1,15 @@
 import os
-import mysql.connector
-import pandas as pd
 from configparser import NoSectionError
 from pathlib import Path
-from mysql.connector.errors import DatabaseError, OperationalError, InternalError
+
+import mysql.connector
+import pandas as pd
+from mysql.connector.errors import (DatabaseError, InternalError,
+                                    OperationalError)
 from retrying import retry
-from sroka.api.mysql.mysql_helpers import validate_options, get_options_from_config
+
+from sroka.api.mysql.mysql_helpers import (get_options_from_config,
+                                           validate_options)
 
 
 @retry(stop_max_attempt_number=1,
