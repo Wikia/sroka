@@ -46,6 +46,7 @@ def get_resource_from_admanager(
     filter_str: str = None,
     page_size: int = None,
     order_by: str = None,
+    columns_to_keep: list = None,
     network_code=None,
 ) -> pd.DataFrame:
     """
@@ -62,6 +63,8 @@ def get_resource_from_admanager(
             e.g. "displayName = 'My Auction'".
         page_size (int): Items per page (max 1000, default 1000).
         order_by (str): Optional ordering expression, e.g. 'displayName ASC'.
+        columns_to_keep (list): Optional list of column names to include in the
+            returned DataFrame. If None, all columns are returned.
         network_code (int|str): GAM network code. Falls back to config.ini.
 
     Returns:
@@ -122,13 +125,17 @@ def get_resource_from_admanager(
         page_number += 1
 
     print(f"Successfully fetched a total of {len(all_items)} '{resource}' items.\n")
-    return pd.DataFrame(all_items)
+    df = pd.DataFrame(all_items)
+    if columns_to_keep and not df.empty:
+        df = df[columns_to_keep]
+    return df
 
 
 def get_private_auctions_from_admanager(
     filter_str: str = None,
     page_size: int = None,
     order_by: str = None,
+    columns_to_keep: list = None,
     network_code=None,
 ) -> pd.DataFrame:
     """
@@ -142,6 +149,8 @@ def get_private_auctions_from_admanager(
             e.g. "displayName = 'My Auction'".
         page_size (int): Items per page (max 1000, default 1000).
         order_by (str): Optional ordering, e.g. 'displayName ASC'.
+        columns_to_keep (list): Optional list of column names to include in the
+            returned DataFrame. If None, all columns are returned.
         network_code (int|str): GAM network code. Falls back to config.ini.
 
     Returns:
@@ -152,6 +161,7 @@ def get_private_auctions_from_admanager(
         filter_str=filter_str,
         page_size=page_size,
         order_by=order_by,
+        columns_to_keep=columns_to_keep,
         network_code=network_code,
     )
 
@@ -160,6 +170,7 @@ def get_private_auction_deals_from_admanager(
     filter_str: str = None,
     page_size: int = None,
     order_by: str = None,
+    columns_to_keep: list = None,
     network_code=None,
 ) -> pd.DataFrame:
     """
@@ -173,6 +184,8 @@ def get_private_auction_deals_from_admanager(
             e.g. "status = 'ACTIVE'".
         page_size (int): Items per page (max 1000, default 1000).
         order_by (str): Optional ordering, e.g. 'createTime DESC'.
+        columns_to_keep (list): Optional list of column names to include in the
+            returned DataFrame. If None, all columns are returned.
         network_code (int|str): GAM network code. Falls back to config.ini.
 
     Returns:
@@ -183,5 +196,6 @@ def get_private_auction_deals_from_admanager(
         filter_str=filter_str,
         page_size=page_size,
         order_by=order_by,
+        columns_to_keep=columns_to_keep,
         network_code=network_code,
     )
