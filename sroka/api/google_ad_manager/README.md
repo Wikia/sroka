@@ -1,5 +1,3 @@
-from sroka_internal_tests.google_ad_manager_tests import columns_to_keep
-
 # GAM API
 
 ## Methods
@@ -143,4 +141,112 @@ columns_to_keep = ['id', 'parentId', 'hasChildren', 'adUnitDetails', 'adUnitCode
 
 data = get_service_data_from_admanager(service, filter_text, network_code=1234)
 
+```
+
+---
+
+## REST (Beta) API
+
+The REST API functions live in `gam_rest_api.py` and use the same `ad_manager.json` service account key and `network_code` from `config.ini` as the SOAP functions above. No additional configuration is required.
+
+### `get_resource_from_admanager(resource, filter_str, page_size, order_by, columns_to_keep, network_code)`
+
+Generic function that fetches any supported REST resource. Handles pagination automatically via `nextPageToken`.
+
+#### Arguments
+
+* string `resource` - obligatory. Must be a key in the resource map. Supported values:
+  * `'PrivateAuction'`
+  * `'PrivateAuctionDeal'`
+* string `filter_str` - optional. Filter expression in GAM REST filter syntax, e.g. `"displayName = 'My Auction'"`.
+* int `page_size` - optional. Items per page, max 1000. Default: 1000.
+* string `order_by` - optional. Ordering expression, e.g. `'displayName ASC'`.
+* list `columns_to_keep` - optional. List of column names to include in the output DataFrame. If None, all columns are returned.
+* int/str `network_code` - optional. Default value taken from `config.ini`. Can be overwritten if the service account has access to more than one network.
+
+#### Returns
+
+* pandas.DataFrame
+
+#### Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_rest_api import get_resource_from_admanager
+
+data = get_resource_from_admanager(
+    resource='PrivateAuction',
+    filter_str="displayName = 'My Auction'",
+    columns_to_keep=['name', 'displayName'],
+    network_code=1234,
+)
+```
+
+---
+
+### `get_private_auctions_from_admanager(filter_str, page_size, order_by, columns_to_keep, network_code)`
+
+Fetches Private Auctions from the GAM REST (Beta) API.
+
+API reference: [networks.privateAuctions](https://developers.google.com/ad-manager/api/beta/reference/rest/v1/networks.privateAuctions)
+
+#### Arguments
+
+* string `filter_str` - optional. Filter expression, e.g. `"displayName = 'My Auction'"`.
+* int `page_size` - optional. Items per page, max 1000. Default: 1000.
+* string `order_by` - optional. Ordering expression, e.g. `'displayName ASC'`.
+* list `columns_to_keep` - optional. List of column names to include in the output DataFrame. If None, all columns are returned.
+* int/str `network_code` - optional. Default value taken from `config.ini`.
+
+#### Returns
+
+* pandas.DataFrame
+
+#### Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_rest_api import get_private_auctions_from_admanager
+
+# All private auctions
+data = get_private_auctions_from_admanager(network_code=1234)
+
+# With filtering and column selection
+data = get_private_auctions_from_admanager(
+    filter_str="displayName = 'My Auction'",
+    columns_to_keep=['name', 'displayName'],
+    network_code=1234,
+)
+```
+
+---
+
+### `get_private_auction_deals_from_admanager(filter_str, page_size, order_by, columns_to_keep, network_code)`
+
+Fetches Private Auction Deals from the GAM REST (Beta) API.
+
+API reference: [networks.privateAuctionDeals](https://developers.google.com/ad-manager/api/beta/reference/rest/v1/networks.privateAuctionDeals)
+
+#### Arguments
+
+* string `filter_str` - optional. Filter expression, e.g. `"status = 'ACTIVE'"`.
+* int `page_size` - optional. Items per page, max 1000. Default: 1000.
+* string `order_by` - optional. Ordering expression, e.g. `'createTime DESC'`.
+* list `columns_to_keep` - optional. List of column names to include in the output DataFrame. If None, all columns are returned.
+* int/str `network_code` - optional. Default value taken from `config.ini`.
+
+#### Returns
+
+* pandas.DataFrame
+
+#### Example usage
+
+```python
+from sroka.api.google_ad_manager.gam_rest_api import get_private_auction_deals_from_admanager
+
+# All active deals with selected columns
+data = get_private_auction_deals_from_admanager(
+    filter_str="status = 'ACTIVE'",
+    order_by='createTime DESC',
+    columns_to_keep=['name', 'status', 'buyerAccountId', 'floorPrice'],
+    network_code=1234,
+)
 ```
