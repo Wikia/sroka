@@ -4,12 +4,8 @@ from contextlib import contextmanager
 
 import pandas as pd
 from qds_sdk.commands import Command, HiveCommand, PrestoCommand
-from qds_sdk.exception import (
-    ForbiddenAccess,
-    ResourceInvalid,
-    ResourceNotFound,
-    UnauthorizedAccess,
-)
+from qds_sdk.exception import (ForbiddenAccess, ResourceInvalid,
+                               ResourceNotFound, UnauthorizedAccess)
 from qds_sdk.qubole import Qubole
 
 import sroka.config.config as config

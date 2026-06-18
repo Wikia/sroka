@@ -1,5 +1,6 @@
-import sroka.config.config as config
 from configparser import NoOptionError
+
+import sroka.config.config as config
 
 
 def get_options_from_config():

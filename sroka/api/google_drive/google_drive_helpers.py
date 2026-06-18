@@ -1,6 +1,8 @@
 import os
 import re
+
 from googleapiclient.discovery import build
+
 import sroka.config.config as config
 
 
@@ -17,6 +19,7 @@ def is_valid_email(email_string: str):
     if re.fullmatch(email_regex, email_string):
         return True
     return False
+
 
 def service_builder(service_type: int, version: str):
     """
@@ -38,15 +41,15 @@ def service_builder(service_type: int, version: str):
     try:
         valid_service_type = [1, 2]
         if service_type not in valid_service_type:
-            raise ValueError('Available services: [1] sheets, [2] drive')   
+            raise ValueError('Available services: [1] sheets, [2] drive')
     except ValueError as e:
         print(f"An incorrect role has been used in the function - {e}")
         return False
-    
+
     try:
         valid_version = ['v2', 'v3', 'v4']
         if version.lower() not in valid_version:
-            raise ValueError('Available versions: v2, v3, v4')   
+            raise ValueError('Available versions: v2, v3, v4')
     except ValueError as er:
         print(f"An incorrect version has been used in the function - {er}")
         return False

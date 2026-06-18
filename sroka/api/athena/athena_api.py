@@ -5,8 +5,9 @@ import boto3
 from botocore.exceptions import ClientError, EndpointConnectionError
 
 import sroka.config.config as config
-from sroka.api.athena.athena_api_helpers import poll_status, download_file, return_on_exception, \
-    input_check
+from sroka.api.athena.athena_api_helpers import (download_file, input_check,
+                                                 poll_status,
+                                                 return_on_exception)
 
 
 def query_athena(query, filename=None):

@@ -1,13 +1,12 @@
 import pandas as pd
-from py2neo import Graph
-from py2neo import ClientError
+from py2neo import ClientError, Graph
 
 import sroka.config.config as config
 
 
 def neo4j_query_data(cypher, parameters=None, **kwparameters):
 
-    if type(cypher) != str:
+    if not isinstance(cypher, str):
         print('Cypher query needs to be a string')
         return pd.DataFrame([])
 
@@ -15,7 +14,7 @@ def neo4j_query_data(cypher, parameters=None, **kwparameters):
         print('Cypher query cannot be empty')
         return pd.DataFrame([])
 
-    if parameters and type(parameters) != dict:
+    if parameters and not isinstance(parameters, dict):
         print('Parameters need to be a dictionary')
         return pd.DataFrame([])
 

@@ -1,8 +1,8 @@
 import pandas as pd
+from google.api_core.exceptions import BadRequest, Forbidden, NotFound
 from google.cloud import bigquery
-import sroka.config.config as config
-from google.api_core.exceptions import Forbidden, NotFound, BadRequest
 
+import sroka.config.config as config
 
 KEY_FILE = config.get_file_path('google_bigquery')
 
@@ -10,11 +10,11 @@ KEY_FILE = config.get_file_path('google_bigquery')
 def query_bigquery(input_query, filename=None):
 
     if filename:
-        if type(filename) != str:
+        if not isinstance(filename, str):
             print('filename needs to be a string')
             return None
 
-        if type(input_query) != str:
+        if not isinstance(input_query, str):
             print('input_query needs to be a string')
             return None
 
@@ -26,7 +26,7 @@ def query_bigquery(input_query, filename=None):
             return None
 
     else:
-        if type(input_query) != str:
+        if not isinstance(input_query, str):
             print('input_query needs to be a string')
             return pd.DataFrame([])
 
@@ -55,11 +55,11 @@ def query_bigquery(input_query, filename=None):
 def done_bigquery(job_id, filename=None):
 
     if filename:
-        if type(filename) != str:
+        if not isinstance(filename, str):
             print('filename needs to be a string')
             return None
 
-        if type(job_id) != str:
+        if not isinstance(job_id, str):
             print('input_query needs to be a string')
             return None
 
@@ -71,7 +71,7 @@ def done_bigquery(job_id, filename=None):
             return None
 
     else:
-        if type(job_id) != str:
+        if not isinstance(job_id, str):
             print('input_query needs to be a string')
             return pd.DataFrame([])
 

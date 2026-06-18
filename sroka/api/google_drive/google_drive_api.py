@@ -2,9 +2,10 @@ from __future__ import print_function
 
 import numpy as np
 import pandas as pd
-
 from googleapiclient.errors import HttpError
-from sroka.api.google_drive.google_drive_helpers import is_valid_email, service_builder
+
+from sroka.api.google_drive.google_drive_helpers import (is_valid_email,
+                                                         service_builder)
 
 
 def google_drive_sheets_read(sheetname_id: str, sheet_range: str, first_row_columns=False):
@@ -231,7 +232,7 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
 
     Args:
         spreadsheet_id (str): The ID of the spreadsheet.
-        tab_name (str): The name of the tab to delete.  
+        tab_name (str): The name of the tab to delete.
     Returns:
         str: The ID of the spreadsheet.
     """
@@ -274,10 +275,10 @@ def google_drive_sheets_delete_tab(spreadsheet_id: str, tab_name: str):
 def google_drive_get_file_parents(file_id: str):
     """
     Retrieves the parent folder IDs for a specified file on Google Drive.
-       
+
     Args:
         file_id (str): The ID of the file whose parent folders are to be retrieved.
-    
+
     Returns:
         list: A list of string IDs for the parent folder(s) of the file. Returns an empty list on failure.
     """
@@ -330,7 +331,7 @@ def google_drive_transfer_ownership(file_id: str, new_owner_email: str):
 
         # Create the permission, triggering the ownership transfer
         # pylint: disable=E1101
-        permission = service.permissions().create(
+        service.permissions().create(
             fileId=file_id,
             body=permission_body,
             transferOwnership=True,
@@ -373,7 +374,7 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
     except ValueError as er:
         print(f"An incorrect role has been used in the function - {er}")
         return False
-   
+
     try:
         if is_valid_email(user_email) is False:
             raise ValueError(f'The {user_email} is incorrect.')
@@ -390,10 +391,10 @@ def google_drive_change_file_permission(file_id: str, user_email: str, role: str
             'role': role.lower(),
             'emailAddress': user_email.lower()
         }
-        
+
         # Insert the new permission
         # pylint: disable=E1101
-        permission = service.permissions().create(
+        service.permissions().create(
             fileId=file_id,
             body=permission_body,
             fields='id'
